@@ -1,0 +1,1 @@
+export { FractalGlassHero } from "./FractalGlassHero";

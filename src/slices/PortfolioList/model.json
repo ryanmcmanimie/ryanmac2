@@ -1,0 +1,17 @@
+{
+  "id": "portfolio_list",
+  "type": "SharedSlice",
+  "name": "PortfolioList",
+  "description": "A scroll-animated portfolio showcase with hardcoded projects",
+  "variations": [
+    {
+      "id": "default",
+      "name": "Default",
+      "docURL": "...",
+      "version": "initial",
+      "description": "Default variation",
+      "imageUrl": "",
+      "primary": {}
+    }
+  ]
+}

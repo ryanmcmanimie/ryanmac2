@@ -1,0 +1,17 @@
+{
+  "id": "glass_hero",
+  "type": "SharedSlice",
+  "name": "GlassHero",
+  "description": "A full-height hero section with centered content",
+  "variations": [
+    {
+      "id": "default",
+      "name": "Default",
+      "docURL": "...",
+      "version": "initial",
+      "description": "Default variation",
+      "imageUrl": "",
+      "primary": {}
+    }
+  ]
+}

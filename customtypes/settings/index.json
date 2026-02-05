@@ -1,0 +1,38 @@
+{
+  "format": "custom",
+  "id": "settings",
+  "label": "Settings",
+  "repeatable": false,
+  "status": true,
+  "json": {
+    "Main": {
+      "email": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Email",
+          "placeholder": "",
+          "allowTargetBlank": false,
+          "single": "strong,em"
+        }
+      },
+      "location": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Location",
+          "placeholder": "",
+          "allowTargetBlank": false,
+          "single": "strong,em"
+        }
+      },
+      "phone": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Phone",
+          "placeholder": "",
+          "allowTargetBlank": false,
+          "single": "strong"
+        }
+      }
+    }
+  }
+}

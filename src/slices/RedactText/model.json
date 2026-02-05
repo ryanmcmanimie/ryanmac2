@@ -1,0 +1,17 @@
+{
+  "id": "redact_text",
+  "type": "SharedSlice",
+  "name": "RedactText",
+  "description": "Text reveal animation with sliding block effect",
+  "variations": [
+    {
+      "id": "default",
+      "name": "Default",
+      "docURL": "...",
+      "version": "initial",
+      "description": "Default variation",
+      "imageUrl": "",
+      "primary": {}
+    }
+  ]
+}
