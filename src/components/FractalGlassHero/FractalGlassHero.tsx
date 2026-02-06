@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import * as THREE from "three";
 import { vertexShader, fragmentShader } from "./shaders";
@@ -15,15 +15,50 @@ const config = {
   edgePadding: 0.1,
 };
 
-export function FractalGlassHero() {
+const DEFAULT_IMAGES = {
+  desktop: "/images/hero-desktop.jpg",
+  mobile: "/images/hero-mobile.jpg",
+};
+
+const MOBILE_BREAKPOINT = 768;
+
+interface FractalGlassHeroProps {
+  desktopImage?: string;
+  mobileImage?: string;
+  headline?: string;
+  tagline?: string;
+}
+
+export function FractalGlassHero({
+  desktopImage,
+  mobileImage,
+  headline = "Designed for the space between silence and noise.",
+  tagline = "Developed by Codegrid",
+}: FractalGlassHeroProps) {
+  const images = {
+    desktop: desktopImage || DEFAULT_IMAGES.desktop,
+    mobile: mobileImage || DEFAULT_IMAGES.mobile,
+  };
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const frameRef = useRef<number>(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
     const container = containerRef.current;
+    const imageSrc = isMobile ? images.mobile : images.desktop;
 
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -67,7 +102,7 @@ export function FractalGlassHero() {
     scene.add(mesh);
 
     const textureLoader = new THREE.TextureLoader();
-    textureLoader.load("/images/hero3.jpg", (texture) => {
+    textureLoader.load(imageSrc, (texture) => {
       material.uniforms.uTexture.value = texture;
       material.uniforms.uTextureSize.value.set(
         texture.image.width,
@@ -117,13 +152,13 @@ export function FractalGlassHero() {
       geometry.dispose();
       material.dispose();
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <section className="relative w-full h-svh overflow-hidden">
       {/* Hidden image for SEO/accessibility */}
       <Image
-        src="/images/hero.jpg"
+        src={isMobile ? images.mobile : images.desktop}
         alt="Hero background"
         fill
         className="hidden"
@@ -136,9 +171,9 @@ export function FractalGlassHero() {
       {/* Hero content overlay */}
       <div className="absolute bottom-0 left-0 w-full p-8 flex justify-between items-end max-md:flex-col-reverse max-md:items-start max-md:gap-4">
         <h1 className="font-light w-3/5 max-md:w-full text-white text-6xl max-md:text-4xl tracking-tight leading-none">
-          Designed for the space between silence and noise.
+          {headline}
         </h1>
-        <p className="text-white text-sm font-medium">Developed by Codegrid</p>
+        {tagline && <p className="text-white text-sm font-medium">{tagline}</p>}
       </div>
     </section>
   );

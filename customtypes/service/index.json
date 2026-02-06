@@ -1,8 +1,22 @@
 {
   "format": "page",
-  "id": "services",
+  "id": "service",
   "json": {
     "Main": {
+      "title": {
+        "config": {
+          "label": "Title",
+          "placeholder": "Service name"
+        },
+        "type": "StructuredText"
+      },
+      "description": {
+        "config": {
+          "label": "Description",
+          "placeholder": "Brief service description"
+        },
+        "type": "StructuredText"
+      },
       "slices": {
         "config": {
           "choices": {
@@ -43,7 +57,7 @@
       }
     }
   },
-  "label": "Services",
-  "repeatable": false,
+  "label": "Service",
+  "repeatable": true,
   "status": true
 }

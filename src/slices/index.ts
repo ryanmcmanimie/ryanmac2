@@ -6,4 +6,5 @@ export const components = {
   glass_hero: dynamic(() => import("./GlassHero")),
   portfolio_list: dynamic(() => import("./PortfolioList")),
   redact_text: dynamic(() => import("./RedactText")),
+  simple_hero: dynamic(() => import("./SimpleHero")),
 };

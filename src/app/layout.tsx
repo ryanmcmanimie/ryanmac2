@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ViewTransitions } from "next-view-transitions";
 import { PrismicPreview } from "@prismicio/next";
 import { createClient, repositoryName } from "@/prismicio";
 import { LenisProvider } from "@/providers/LenisProvider";
@@ -24,15 +25,17 @@ export default async function RootLayout({
   ]);
 
   return (
-    <html lang="en">
-      <body className={`${helveticaNeue.variable} ${helveticaNeueCn.variable} antialiased`}>
-        <LenisProvider>
-          <PushMenuProvider navigation={navigation} settings={settings}>
-            {children}
-          </PushMenuProvider>
-        </LenisProvider>
-        <PrismicPreview repositoryName={repositoryName} />
-      </body>
-    </html>
+    <ViewTransitions>
+      <html lang="en">
+        <body className={`${helveticaNeue.variable} ${helveticaNeueCn.variable} antialiased`}>
+          <LenisProvider>
+            <PushMenuProvider navigation={navigation} settings={settings}>
+              {children}
+            </PushMenuProvider>
+          </LenisProvider>
+          <PrismicPreview repositoryName={repositoryName} />
+        </body>
+      </html>
+    </ViewTransitions>
   );
 }

@@ -2,6 +2,10 @@
 
 > Reference file for Prismic CMS patterns. Read this when working with Prismic content, rich text, or the Migration/Content APIs.
 
+## Development Setup
+
+Slice Machine runs concurrently with the dev server via `npm run dev`. Types regenerate automatically when slice models change.
+
 ## Rich Text Format
 
 Prismic rich text is an **array of block objects** where inline formatting uses character-offset spans.
@@ -221,6 +225,35 @@ When translating, update internal links to match target locale:
 
 // Translation (zh-cn) - update the locale prefix
 "url": "/zh-cn/blog/some-article"
+```
+
+## Slice Modeling Patterns
+
+### Header/Title Fields
+
+Never use heading types (`heading1`, `heading2`, etc.) in StructuredText field configs. Use `strong` only.
+
+**Why:**
+- Developers control semantic HTML structure
+- Ensures proper heading hierarchy (h1 once per page, etc.)
+- Simpler editor experience - just bold text, no block type inference
+
+**Model:**
+```json
+"header": {
+  "type": "StructuredText",
+  "config": {
+    "label": "Header",
+    "single": "strong"
+  }
+}
+```
+
+**Component:** Use `asText()` to extract plain text, render as appropriate heading:
+```tsx
+import { asText } from "@prismicio/client";
+
+<h2>{asText(slice.primary.header)}</h2>
 ```
 
 ## Common Gotchas

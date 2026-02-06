@@ -2,7 +2,7 @@
   "id": "glass_hero",
   "type": "SharedSlice",
   "name": "GlassHero",
-  "description": "A full-height hero section with centered content",
+  "description": "A full-height hero section with fractal glass WebGL effect",
   "variations": [
     {
       "id": "default",
@@ -11,7 +11,47 @@
       "version": "initial",
       "description": "Default variation",
       "imageUrl": "",
-      "primary": {}
+      "primary": {
+        "background_image_desktop": {
+          "type": "Image",
+          "config": {
+            "label": "Background Image (Desktop)",
+            "constraint": {
+              "width": 3840,
+              "height": 2160
+            },
+            "thumbnails": []
+          }
+        },
+        "background_image_mobile": {
+          "type": "Image",
+          "config": {
+            "label": "Background Image (Mobile)",
+            "constraint": {
+              "width": 1440,
+              "height": 2560
+            },
+            "thumbnails": []
+          }
+        },
+        "headline": {
+          "type": "StructuredText",
+          "config": {
+            "label": "Headline",
+            "placeholder": "Enter headline text",
+            "allowTargetBlank": false,
+            "single": "strong"
+          }
+        },
+        "tagline": {
+          "type": "Text",
+          "config": {
+            "label": "Tagline",
+            "placeholder": "Optional tagline or credit"
+          }
+        }
+      },
+      "items": {}
     }
   ]
 }

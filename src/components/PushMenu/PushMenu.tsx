@@ -6,11 +6,14 @@ import {
   useRef,
   useState,
   useLayoutEffect,
+  useCallback,
   ReactNode,
 } from "react";
+import type { MouseEvent } from "react";
 import Image from "next/image";
+import { useTransitionRouter } from "next-view-transitions";
 import { PrismicLink } from "@prismicio/react";
-import { asText } from "@prismicio/client";
+import { asText, asLink } from "@prismicio/client";
 import type { Content } from "@prismicio/client";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
@@ -46,8 +49,37 @@ interface PushMenuProviderProps {
   settings: Content.SettingsDocument | null;
 }
 
+function slideInOut() {
+  document.documentElement.animate(
+    [
+      { opacity: 1, transform: "translateY(0)" },
+      { opacity: 0.2, transform: "translateY(-35%)" },
+    ],
+    {
+      duration: 1500,
+      easing: "cubic-bezier(0.87, 0, 0.13, 1)",
+      fill: "forwards",
+      pseudoElement: "::view-transition-old(root)",
+    }
+  );
+
+  document.documentElement.animate(
+    [
+      { clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)", opacity: 1 },
+      { clipPath: "polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)", opacity: 1 },
+    ],
+    {
+      duration: 1500,
+      easing: "cubic-bezier(0.87, 0, 0.13, 1)",
+      fill: "forwards",
+      pseudoElement: "::view-transition-new(root)",
+    }
+  );
+}
+
 export function PushMenuProvider({ children, navigation, settings }: PushMenuProviderProps) {
   const lenis = useLenis();
+  const router = useTransitionRouter();
   const [isOpen, setIsOpen] = useState(false);
   const isAnimatingRef = useRef(false);
 
@@ -210,6 +242,45 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
     }
   };
 
+  const resetMenuState = useCallback(() => {
+    // Immediately reset menu to closed state (no animation)
+    hamburgerIconRef.current?.classList.remove("active");
+    gsap.set(containerRef.current, { y: "0svh" });
+    gsap.set(menuOverlayRef.current, { clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)" });
+    gsap.set(menuOverlayContentRef.current, { yPercent: -50 });
+    gsap.set(menuToggleLabelRef.current, { y: "0%" });
+    gsap.set(menuMediaWrapperRef.current, { opacity: 0 });
+
+    splitTextRef.current.forEach(({ splits }) => {
+      const copyLines = splits.flatMap((split) => split.lines);
+      gsap.set(copyLines, { y: "-110%" });
+    });
+
+    isAnimatingRef.current = false;
+    setIsOpen(false);
+    lenis?.start();
+  }, [lenis]);
+
+  const handleMenuLinkClick = useCallback(
+    (e: MouseEvent<HTMLAnchorElement>, href: string | null) => {
+      if (!href || href.startsWith("http") || href.startsWith("mailto:") || href.startsWith("tel:")) {
+        return; // Let external links work normally
+      }
+
+      e.preventDefault();
+
+      // Navigate immediately - the view transition captures the menu as part of the old page
+      router.push(href, {
+        onTransitionReady: () => {
+          slideInOut();
+          // Reset menu state after transition starts so new page has closed menu
+          resetMenuState();
+        },
+      });
+    },
+    [router, resetMenuState]
+  );
+
   return (
     <PushMenuContext.Provider
       value={{ isOpen, toggle, open: openMenu, close: closeMenu }}
@@ -219,16 +290,26 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
         {/* Menu Bar */}
         <div className="fixed top-0 left-0 w-screen p-5 sm:p-8 flex justify-between items-center pointer-events-auto text-[#5f5f5f] z-50">
           {/* Logo */}
-          <div className="w-8 h-8 relative">
-            <a href="#">
-              <Image
-                src="/images/logo.png"
-                alt="Logo"
-                fill
-                className="object-contain"
-              />
-            </a>
-          </div>
+          <a
+            href="/"
+            className="block"
+            onClick={(e) => {
+              e.preventDefault();
+              if (isOpen) {
+                resetMenuState();
+              }
+              router.push("/", {
+                onTransitionReady: slideInOut,
+              });
+            }}
+          >
+            <Image
+              src="/ryanmacv2.svg"
+              alt="Ryan Mac"
+              width={144}
+              height={29}
+            />
+          </a>
 
           {/* Toggle Button */}
           <div
@@ -291,6 +372,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                       <PrismicLink
                         field={item.url}
                         className="text-5xl max-md:text-4xl font-medium leading-tight"
+                        onClick={(e) => handleMenuLinkClick(e, asLink(item.url))}
                       >
                         {item.label}
                       </PrismicLink>
@@ -307,7 +389,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                       href="#"
                       className="text-2xl max-md:text-xl font-medium text-[#5f5f5f]"
                     >
-                      Web Animations
+                      Web Architect
                     </a>
                   </div>
                   <div className="menu-tag">
@@ -315,7 +397,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                       href="#"
                       className="text-2xl max-md:text-xl font-medium text-[#5f5f5f]"
                     >
-                      Interactive Media
+                      AI Automation
                     </a>
                   </div>
                   <div className="menu-tag">
@@ -323,7 +405,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                       href="#"
                       className="text-2xl max-md:text-xl font-medium text-[#5f5f5f]"
                     >
-                      Motion Craft
+                      Angry Musician
                     </a>
                   </div>
                 </div>

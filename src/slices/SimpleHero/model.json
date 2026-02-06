@@ -1,0 +1,26 @@
+{
+  "id": "simple_hero",
+  "type": "SharedSlice",
+  "name": "SimpleHero",
+  "description": "A simple hero section with large header text in the bottom corner",
+  "variations": [
+    {
+      "id": "default",
+      "name": "Default",
+      "docURL": "...",
+      "version": "initial",
+      "description": "Default variation",
+      "imageUrl": "",
+      "primary": {
+        "header": {
+          "type": "StructuredText",
+          "config": {
+            "label": "Header",
+            "placeholder": "Hero header text",
+            "single": "paragraph"
+          }
+        }
+      }
+    }
+  ]
+}

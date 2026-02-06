@@ -1,8 +1,32 @@
 {
   "format": "page",
-  "id": "services",
+  "id": "blog_post",
   "json": {
     "Main": {
+      "title": {
+        "config": {
+          "label": "Title",
+          "placeholder": "Post title"
+        },
+        "type": "StructuredText"
+      },
+      "featured_image": {
+        "config": {
+          "label": "Featured Image",
+          "constraint": {
+            "width": 1200,
+            "height": 630
+          },
+          "thumbnails": []
+        },
+        "type": "Image"
+      },
+      "publication_date": {
+        "config": {
+          "label": "Publication Date"
+        },
+        "type": "Date"
+      },
       "slices": {
         "config": {
           "choices": {
@@ -43,7 +67,7 @@
       }
     }
   },
-  "label": "Services",
-  "repeatable": false,
+  "label": "Blog Post",
+  "repeatable": true,
   "status": true
 }
