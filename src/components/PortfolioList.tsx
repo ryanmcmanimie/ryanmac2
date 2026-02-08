@@ -90,16 +90,8 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
 
       {/* Portfolio Section - contains sticky header and items */}
       <div className="relative">
-        {/* Sticky Counter Header - sticks when reached, releases when section ends */}
-        <div className="sticky top-18 z-40 text-[#141414] bg-white px-6 py-4">
-          <h2 className="text-4xl font-extralight leading-none">
-            {String(currentIndex).padStart(2, "0")}
-            <span>/{projects.length}</span>
-          </h2>
-        </div>
-
         {/* Portfolio Items */}
-        <div className="px-6 pb-12 flex flex-col gap-12">
+        <div className="px-6 py-24 flex flex-col gap-12">
           {projects.map((project, index) => {
             const isActive = currentIndex === index + 1;
             return (
@@ -142,6 +134,14 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
               </div>
             );
           })}
+        </div>
+
+        {/* Sticky Counter Footer - sticks to bottom when scrolling through section */}
+        <div className="sticky bottom-0 z-40 text-[#141414] bg-white px-6 py-4">
+          <h2 className="text-4xl font-extralight leading-none">
+            {String(currentIndex).padStart(2, "0")}
+            <span>/{projects.length}</span>
+          </h2>
         </div>
       </div>
 

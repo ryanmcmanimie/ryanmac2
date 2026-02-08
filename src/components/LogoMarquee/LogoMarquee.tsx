@@ -69,7 +69,7 @@ export function LogoMarquee({ height = 200 }: LogoMarqueeProps) {
   return (
     <div
       ref={containerRef}
-      className="logo-marquee relative overflow-hidden bg-black/20 backdrop-blur-sm border-b-8 border-neutral-100"
+      className="logo-marquee relative overflow-hidden bg-black/20 backdrop-blur-sm border-b-4 sm:border-b-8 border-neutral-100"
       style={{
         ["--desktop-height" as string]: `${height}px`,
         ["--mobile-height" as string]: `${mobileHeight}px`,
