@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ViewTransitions } from "next-view-transitions";
 import { PrismicPreview } from "@prismicio/next";
 import { createClient, repositoryName } from "@/prismicio";
-import { LenisProvider } from "@/providers/LenisProvider";
+import { LenisProvider, LogosProvider } from "@/providers";
 import { PushMenuProvider } from "@/components/PushMenu";
 import { helveticaNeue, helveticaNeueCn } from "@/fonts";
 import "./globals.css";
@@ -19,9 +19,10 @@ export default async function RootLayout({
 }>) {
   const client = createClient();
 
-  const [navigation, settings] = await Promise.all([
+  const [navigation, settings, logos] = await Promise.all([
     client.getSingle("navigation").catch(() => null),
     client.getSingle("settings").catch(() => null),
+    client.getSingle("logos").catch(() => null),
   ]);
 
   return (
@@ -29,9 +30,11 @@ export default async function RootLayout({
       <html lang="en">
         <body className={`${helveticaNeue.variable} ${helveticaNeueCn.variable} antialiased`}>
           <LenisProvider>
-            <PushMenuProvider navigation={navigation} settings={settings}>
-              {children}
-            </PushMenuProvider>
+            <LogosProvider logos={logos}>
+              <PushMenuProvider navigation={navigation} settings={settings}>
+                {children}
+              </PushMenuProvider>
+            </LogosProvider>
           </LenisProvider>
           <PrismicPreview repositoryName={repositoryName} />
         </body>

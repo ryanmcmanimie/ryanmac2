@@ -1,6 +1,6 @@
-import { FC } from "react";
-import { Content } from "@prismicio/client";
+import { Content, asText } from "@prismicio/client";
 import { SliceComponentProps } from "@prismicio/react";
+import { createClient } from "@/prismicio";
 import { PortfolioList as PortfolioListComponent } from "@/components/PortfolioList";
 
 /**
@@ -12,15 +12,28 @@ export type PortfolioListProps =
 /**
  * Component for "PortfolioList" Slices.
  */
-const PortfolioList: FC<PortfolioListProps> = ({ slice }) => {
+async function PortfolioList({ slice }: PortfolioListProps) {
+  const client = createClient();
+  const projectDocs = await client.getAllByType("project");
+
+  const projects = projectDocs
+    .map((doc) => ({
+      name: asText(doc.data.title),
+      subtitle: doc.data.subtitle ? asText(doc.data.subtitle) : null,
+      muxPlaybackId: doc.data.teaser_video_mux_id,
+      order: doc.data.order ? parseInt(doc.data.order, 10) : Infinity,
+    }))
+    .sort((a, b) => a.order - b.order)
+    .map(({ name, subtitle, muxPlaybackId }) => ({ name, subtitle, muxPlaybackId }));
+
   return (
     <section
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
     >
-      <PortfolioListComponent />
+      <PortfolioListComponent projects={projects} />
     </section>
   );
-};
+}
 
 export default PortfolioList;

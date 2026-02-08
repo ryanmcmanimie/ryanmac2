@@ -1,6 +1,9 @@
 {
   "format": "page",
   "id": "service",
+  "label": "Service",
+  "repeatable": true,
+  "status": true,
   "json": {
     "Main": {
       "title": {
@@ -18,15 +21,15 @@
         "type": "StructuredText"
       },
       "slices": {
+        "type": "Slices",
+        "fieldset": "Slice Zone",
         "config": {
           "choices": {
             "simple_hero": {
               "type": "SharedSlice"
             }
           }
-        },
-        "fieldset": "Slice Zone",
-        "type": "Slices"
+        }
       }
     },
     "SEO & Metadata": {
@@ -56,8 +59,5 @@
         "type": "Image"
       }
     }
-  },
-  "label": "Service",
-  "repeatable": true,
-  "status": true
+  }
 }

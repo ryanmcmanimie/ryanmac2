@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Content, asText } from "@prismicio/client";
 import { SliceComponentProps } from "@prismicio/react";
-import { FractalGlassHero } from "@/components/FractalGlassHero";
+import { GlassHero as GlassHeroComponent } from "@/components/GlassHero";
 
 export type GlassHeroProps = SliceComponentProps<Content.GlassHeroSlice>;
 
@@ -13,7 +13,7 @@ const GlassHero: FC<GlassHeroProps> = ({ slice }) => {
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
     >
-      <FractalGlassHero
+      <GlassHeroComponent
         desktopImage={background_image_desktop?.url ?? undefined}
         mobileImage={background_image_mobile?.url ?? undefined}
         headline={headline ? asText(headline) : undefined}

@@ -32,6 +32,30 @@
             }
           }
         }
+      },
+      "tag_1": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Tag 1",
+          "placeholder": "e.g. Web Architect",
+          "single": "paragraph,strong,em,hyperlink"
+        }
+      },
+      "tag_2": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Tag 2",
+          "placeholder": "e.g. AI Automation",
+          "single": "paragraph,strong,em,hyperlink"
+        }
+      },
+      "tag_3": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Tag 3",
+          "placeholder": "e.g. Angry Musician",
+          "single": "paragraph,strong,em,hyperlink"
+        }
       }
     }
   }

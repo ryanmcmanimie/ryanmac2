@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme inline {
+  --animate-marquee: marquee var(--marquee-speed, 50s) linear infinite;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-helvetica), sans-serif;
@@ -27,8 +28,9 @@ body {
 }
 
 .project-index span {
-  @apply text-2xl;
+  @apply text-4xl;
   @apply ml-1;
+  @apply tracking-normal;
   @apply opacity-50;
 }
 
@@ -58,4 +60,42 @@ body {
 ::view-transition-old(root) {
   z-index: 1;
   animation: none !important;
+}
+
+/* Marquee animation - equal speed forward/reverse with brief pauses */
+@keyframes marquee {
+  /* Start */
+  0% {
+    transform: translateX(0);
+    animation-timing-function: ease-in-out;
+  }
+  /* Forward complete, brief pause */
+  49%,
+  51% {
+    transform: translateX(var(--marquee-distance, -50%));
+    animation-timing-function: ease-in-out;
+  }
+  /* Reverse complete */
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Logo marquee responsive styles */
+.logo-marquee {
+  height: var(--mobile-height, 150px);
+}
+
+.logo-marquee .animate-marquee {
+  --marquee-speed: 70s; /* slower on mobile */
+}
+
+@media (min-width: 768px) {
+  .logo-marquee {
+    height: var(--desktop-height, 200px);
+  }
+
+  .logo-marquee .animate-marquee {
+    --marquee-speed: 47s;
+  }
 }

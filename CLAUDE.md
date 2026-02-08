@@ -49,6 +49,7 @@ The `.claude/memory/` folder contains project learnings that persist across sess
 <!-- Customize these for your project -->
 
 - Use TypeScript for all new files
+- Always opt for Tailwind classes before vanilla CSS
 - Prefer named exports over default exports
 - Components: PascalCase (`MyComponent.tsx`)
 - Utilities: camelCase (`formatDate.ts`)
@@ -56,12 +57,14 @@ The `.claude/memory/` folder contains project learnings that persist across sess
 
 ## Prismic Integration
 
-When working with Prismic content (rich text, documents, slices, or API calls), **read `.claude/prismic-patterns.md`** for:
-- Rich text block and span format (JSON structure)
-- Migration API vs Content API patterns
+**ALWAYS invoke `/prismic` before any Prismic work.** This includes slices, rich text, API calls, content modeling, or migrations. The skill loads context-specific reference files and self-improves as patterns are discovered.
+
+Reference files available:
+- Slice creation (models, mocks, components)
+- Rich text format and rendering
+- API patterns (Migration vs Content API)
 - Field preservation rules
-- Multi-language document patterns
-- Common gotchas (UIDs, character offsets, rate limits)
+- Multi-language documents
 
 ### Quick Environment Setup
 
@@ -110,10 +113,10 @@ Copy to your project's `.claude/` and customize as needed.
 - `/hand-off` - Session transition (captures state for next session)
 
 **Skills:**
+- `/prismic` - Prismic CMS integration (slices, rich text, APIs)
 - `/frontend-design` - Anthropic's official skill for distinctive, production-grade UI (avoids generic AI aesthetics)
 
 **Reference Files:**
-- `.claude/prismic-patterns.md` - Prismic API and rich text patterns
 - `.claude/agents/nextjs-expert.md` - Next.js architecture persona
 - `.claude/vercel-status.md` - Vercel status line setup
 

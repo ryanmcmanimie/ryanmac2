@@ -84,7 +84,7 @@ interface AboutDocumentData {
    * - **Tab**: Main
    * - **Documentation**: https://prismic.io/docs/slices
    */
-  slices: prismic.SliceZone<AboutDocumentDataSlicesSlice> /**
+  slices: prismic.SliceZone<AboutDocumentDataSlicesSlice>; /**
    * Meta Title field in *About*
    *
    * - **Field Type**: Text
@@ -92,7 +92,7 @@ interface AboutDocumentData {
    * - **API ID Path**: about.meta_title
    * - **Tab**: SEO & Metadata
    * - **Documentation**: https://prismic.io/docs/fields/text
-   */;
+   */
   meta_title: prismic.KeyTextField;
 
   /**
@@ -178,7 +178,7 @@ interface BlogPostDocumentData {
    * - **Tab**: Main
    * - **Documentation**: https://prismic.io/docs/slices
    */
-  slices: prismic.SliceZone<BlogPostDocumentDataSlicesSlice> /**
+  slices: prismic.SliceZone<BlogPostDocumentDataSlicesSlice>; /**
    * Meta Title field in *Blog Post*
    *
    * - **Field Type**: Text
@@ -186,7 +186,7 @@ interface BlogPostDocumentData {
    * - **API ID Path**: blog_post.meta_title
    * - **Tab**: SEO & Metadata
    * - **Documentation**: https://prismic.io/docs/fields/text
-   */;
+   */
   meta_title: prismic.KeyTextField;
 
   /**
@@ -246,7 +246,7 @@ interface HomeDocumentData {
    * - **Tab**: Main
    * - **Documentation**: https://prismic.io/docs/slices
    */
-  slices: prismic.SliceZone<HomeDocumentDataSlicesSlice> /**
+  slices: prismic.SliceZone<HomeDocumentDataSlicesSlice>; /**
    * Meta Title field in *Home*
    *
    * - **Field Type**: Text
@@ -254,7 +254,7 @@ interface HomeDocumentData {
    * - **API ID Path**: home.meta_title
    * - **Tab**: SEO & Metadata
    * - **Documentation**: https://prismic.io/docs/fields/text
-   */;
+   */
   meta_title: prismic.KeyTextField;
 
   /**
@@ -291,6 +291,49 @@ interface HomeDocumentData {
  */
 export type HomeDocument<Lang extends string = string> =
   prismic.PrismicDocumentWithoutUID<Simplify<HomeDocumentData>, "home", Lang>;
+
+/**
+ * Item in *Logos → Logos*
+ */
+export interface LogosDocumentDataLogosItem {
+  /**
+   * Logo field in *Logos → Logos*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: logos.logos[].logo
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  logo: prismic.ImageField<never>;
+}
+
+/**
+ * Content for Logos documents
+ */
+interface LogosDocumentData {
+  /**
+   * Logos field in *Logos*
+   *
+   * - **Field Type**: Group
+   * - **Placeholder**: *None*
+   * - **API ID Path**: logos.logos[]
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/repeatable-group
+   */
+  logos: prismic.GroupField<Simplify<LogosDocumentDataLogosItem>>;
+}
+
+/**
+ * Logos document from Prismic
+ *
+ * - **API ID**: `logos`
+ * - **Repeatable**: `false`
+ * - **Documentation**: https://prismic.io/docs/content-modeling
+ *
+ * @typeParam Lang - Language API ID of the document.
+ */
+export type LogosDocument<Lang extends string = string> =
+  prismic.PrismicDocumentWithoutUID<Simplify<LogosDocumentData>, "logos", Lang>;
 
 /**
  * Item in *Navigation → Menu Items*
@@ -331,6 +374,39 @@ interface NavigationDocumentData {
    * - **Documentation**: https://prismic.io/docs/fields/repeatable-group
    */
   menu_items: prismic.GroupField<Simplify<NavigationDocumentDataMenuItemsItem>>;
+
+  /**
+   * Tag 1 field in *Navigation*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: e.g. Web Architect
+   * - **API ID Path**: navigation.tag_1
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  tag_1: prismic.RichTextField;
+
+  /**
+   * Tag 2 field in *Navigation*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: e.g. AI Automation
+   * - **API ID Path**: navigation.tag_2
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  tag_2: prismic.RichTextField;
+
+  /**
+   * Tag 3 field in *Navigation*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: e.g. Angry Musician
+   * - **API ID Path**: navigation.tag_3
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  tag_3: prismic.RichTextField;
 }
 
 /**
@@ -346,6 +422,115 @@ export type NavigationDocument<Lang extends string = string> =
   prismic.PrismicDocumentWithoutUID<
     Simplify<NavigationDocumentData>,
     "navigation",
+    Lang
+  >;
+
+type ProjectDocumentDataSlicesSlice = never;
+
+/**
+ * Content for Project documents
+ */
+interface ProjectDocumentData {
+  /**
+   * Title field in *Project*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: project.title
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  title: prismic.RichTextField;
+
+  /**
+   * Subtitle field in *Project*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: project.subtitle
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  subtitle: prismic.RichTextField;
+
+  /**
+   * Teaser Video Mux ID field in *Project*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: project.teaser_video_mux_id
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  teaser_video_mux_id: prismic.KeyTextField;
+
+  /**
+   * Order field in *Project*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: project.order
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  order: prismic.KeyTextField;
+
+  /**
+   * Slice Zone field in *Project*
+   *
+   * - **Field Type**: Slice Zone
+   * - **Placeholder**: *None*
+   * - **API ID Path**: project.slices[]
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/slices
+   */
+  slices: prismic.SliceZone<ProjectDocumentDataSlicesSlice>; /**
+   * Meta Title field in *Project*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: A title of the page used for social media and search engines
+   * - **API ID Path**: project.meta_title
+   * - **Tab**: SEO & Metadata
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  meta_title: prismic.KeyTextField;
+
+  /**
+   * Meta Description field in *Project*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: A brief summary of the page
+   * - **API ID Path**: project.meta_description
+   * - **Tab**: SEO & Metadata
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  meta_description: prismic.KeyTextField;
+
+  /**
+   * Meta Image field in *Project*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: project.meta_image
+   * - **Tab**: SEO & Metadata
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  meta_image: prismic.ImageField<never>;
+}
+
+/**
+ * Project document from Prismic
+ *
+ * - **API ID**: `project`
+ * - **Repeatable**: `true`
+ * - **Documentation**: https://prismic.io/docs/content-modeling
+ *
+ * @typeParam Lang - Language API ID of the document.
+ */
+export type ProjectDocument<Lang extends string = string> =
+  prismic.PrismicDocumentWithUID<
+    Simplify<ProjectDocumentData>,
+    "project",
     Lang
   >;
 
@@ -386,7 +571,7 @@ interface ServiceDocumentData {
    * - **Tab**: Main
    * - **Documentation**: https://prismic.io/docs/slices
    */
-  slices: prismic.SliceZone<ServiceDocumentDataSlicesSlice> /**
+  slices: prismic.SliceZone<ServiceDocumentDataSlicesSlice>; /**
    * Meta Title field in *Service*
    *
    * - **Field Type**: Text
@@ -394,7 +579,7 @@ interface ServiceDocumentData {
    * - **API ID Path**: service.meta_title
    * - **Tab**: SEO & Metadata
    * - **Documentation**: https://prismic.io/docs/fields/text
-   */;
+   */
   meta_title: prismic.KeyTextField;
 
   /**
@@ -451,7 +636,7 @@ interface ServicesDocumentData {
    * - **Tab**: Main
    * - **Documentation**: https://prismic.io/docs/slices
    */
-  slices: prismic.SliceZone<ServicesDocumentDataSlicesSlice> /**
+  slices: prismic.SliceZone<ServicesDocumentDataSlicesSlice>; /**
    * Meta Title field in *Services*
    *
    * - **Field Type**: Text
@@ -459,7 +644,7 @@ interface ServicesDocumentData {
    * - **API ID Path**: services.meta_title
    * - **Tab**: SEO & Metadata
    * - **Documentation**: https://prismic.io/docs/fields/text
-   */;
+   */
   meta_title: prismic.KeyTextField;
 
   /**
@@ -559,7 +744,9 @@ export type AllDocumentTypes =
   | AboutDocument
   | BlogPostDocument
   | HomeDocument
+  | LogosDocument
   | NavigationDocument
+  | ProjectDocument
   | ServiceDocument
   | ServicesDocument
   | SettingsDocument;
@@ -576,7 +763,7 @@ export interface GlassHeroSliceDefaultPrimary {
    * - **API ID Path**: glass_hero.default.primary.background_image_desktop
    * - **Documentation**: https://prismic.io/docs/fields/image
    */
-  background_image_desktop: prismic.ImageField;
+  background_image_desktop: prismic.ImageField<never>;
 
   /**
    * Background Image (Mobile) field in *GlassHero → Default → Primary*
@@ -586,7 +773,7 @@ export interface GlassHeroSliceDefaultPrimary {
    * - **API ID Path**: glass_hero.default.primary.background_image_mobile
    * - **Documentation**: https://prismic.io/docs/fields/image
    */
-  background_image_mobile: prismic.ImageField;
+  background_image_mobile: prismic.ImageField<never>;
 
   /**
    * Headline field in *GlassHero → Default → Primary*
@@ -774,9 +961,15 @@ declare module "@prismicio/client" {
       HomeDocument,
       HomeDocumentData,
       HomeDocumentDataSlicesSlice,
+      LogosDocument,
+      LogosDocumentData,
+      LogosDocumentDataLogosItem,
       NavigationDocument,
       NavigationDocumentData,
       NavigationDocumentDataMenuItemsItem,
+      ProjectDocument,
+      ProjectDocumentData,
+      ProjectDocumentDataSlicesSlice,
       ServiceDocument,
       ServiceDocumentData,
       ServiceDocumentDataSlicesSlice,

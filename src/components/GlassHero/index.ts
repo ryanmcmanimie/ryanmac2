@@ -1,1 +1,1 @@
-export { FractalGlassHero } from "./FractalGlassHero";
+export { GlassHero } from "./GlassHero";

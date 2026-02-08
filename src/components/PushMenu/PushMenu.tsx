@@ -7,13 +7,14 @@ import {
   useState,
   useLayoutEffect,
   useCallback,
+  useEffect,
   ReactNode,
 } from "react";
 import type { MouseEvent } from "react";
 import Image from "next/image";
 import { useTransitionRouter } from "next-view-transitions";
 import { PrismicLink } from "@prismicio/react";
-import { asText, asLink } from "@prismicio/client";
+import { asText, asLink, isFilled } from "@prismicio/client";
 import type { Content } from "@prismicio/client";
 import gsap from "gsap";
 import { CustomEase } from "gsap/CustomEase";
@@ -81,7 +82,10 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
   const lenis = useLenis();
   const router = useTransitionRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isOverLight, setIsOverLight] = useState(false);
+  const [isFloating, setIsFloating] = useState(false);
   const isAnimatingRef = useRef(false);
+  const menuBarRef = useRef<HTMLDivElement>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const menuOverlayRef = useRef<HTMLDivElement>(null);
@@ -91,6 +95,61 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
   const hamburgerIconRef = useRef<HTMLDivElement>(null);
   const menuColsRef = useRef<HTMLDivElement[]>([]);
   const splitTextRef = useRef<{ container: HTMLDivElement; splits: SplitText[] }[]>([]);
+
+  // Detect when nav is over light sections
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    let lightSections: Element[] = [];
+    let rafId: number | null = null;
+    let lastOverLight = false;
+
+    const cacheSections = () => {
+      lightSections = Array.from(document.querySelectorAll('[data-nav-theme="light"]'));
+    };
+
+    const checkNavTheme = () => {
+      if (rafId) return; // Already scheduled
+
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const navY = 60;
+        let overLight = false;
+
+        for (const section of lightSections) {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= navY && rect.bottom >= navY) {
+            overLight = true;
+            break;
+          }
+        }
+
+        // Only update state if changed
+        if (overLight !== lastOverLight) {
+          lastOverLight = overLight;
+          setIsOverLight(overLight);
+        }
+
+        // Check if floating (scrolled past threshold)
+        const floating = window.scrollY > 20;
+        setIsFloating(floating);
+      });
+    };
+
+    // Cache sections initially and on DOM changes
+    cacheSections();
+    const observer = new MutationObserver(cacheSections);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    window.addEventListener("scroll", checkNavTheme, { passive: true });
+    checkNavTheme();
+
+    return () => {
+      window.removeEventListener("scroll", checkNavTheme);
+      observer.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   useLayoutEffect(() => {
     if (typeof window === "undefined") return;
@@ -288,7 +347,10 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
       {/* Navigation */}
       <nav className="fixed top-0 left-0 w-screen h-svh pointer-events-none overflow-hidden z-50">
         {/* Menu Bar */}
-        <div className="fixed top-0 left-0 w-screen p-5 sm:p-8 flex justify-between items-center pointer-events-auto text-[#5f5f5f] z-50">
+        <div
+          ref={menuBarRef}
+          className={`fixed top-0 left-0 w-screen p-5 sm:p-8 flex justify-between items-center pointer-events-auto z-50 transition-all duration-300 ${isOverLight && !isOpen ? "**:text-black! [&_.hamburger-line]:bg-black! [&_.hamburger-icon]:border-black!" : ""} ${isFloating && !isOpen ? "max-sm:backdrop-blur-sm" : ""}`}
+        >
           {/* Logo */}
           <a
             href="/"
@@ -308,6 +370,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
               alt="Ryan Mac"
               width={144}
               height={29}
+              className={`transition-all duration-300 ${isOverLight && !isOpen ? "invert" : ""}`}
             />
           </a>
 
@@ -316,7 +379,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
             className="flex items-center gap-4 cursor-pointer"
             onClick={toggle}
           >
-            <div className="overflow-hidden">
+            <div className="overflow-hidden max-sm:hidden">
               <p
                 ref={menuToggleLabelRef}
                 className="text-sm font-medium will-change-transform text-white"
@@ -326,10 +389,10 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
             </div>
             <div
               ref={hamburgerIconRef}
-              className="hamburger-icon relative w-12 h-12 flex justify-center items-center border border-white/10 rounded-full"
+              className="hamburger-icon relative w-12 h-12 flex justify-center items-center border border-white rounded-full"
             >
-              <span className="hamburger-line absolute w-[15px] h-[2.25px] bg-white transition-all duration-700 ease-[cubic-bezier(0.87,0,0.13,1)] origin-center will-change-transform" />
-              <span className="hamburger-line absolute w-[15px] h-[2.25px] bg-white transition-all duration-700 ease-[cubic-bezier(0.87,0,0.13,1)] origin-center will-change-transform" />
+              <span className="hamburger-line absolute w-[15px] h-[2.25px] bg-white transition-[transform] duration-700 ease-[cubic-bezier(0.87,0,0.13,1)] origin-center will-change-transform" />
+              <span className="hamburger-line absolute w-[15px] h-[2.25px] bg-white transition-[transform] duration-700 ease-[cubic-bezier(0.87,0,0.13,1)] origin-center will-change-transform" />
             </div>
           </div>
         </div>
@@ -371,7 +434,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                     <div key={index} className="menu-link">
                       <PrismicLink
                         field={item.url}
-                        className="text-5xl max-md:text-4xl font-medium leading-tight"
+                        className="text-5xl max-md:text-4xl font-normal leading-tight"
                         onClick={(e) => handleMenuLinkClick(e, asLink(item.url))}
                       >
                         {item.label}
@@ -384,30 +447,27 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                   ref={(el) => addMenuColRef(el, 1)}
                   className="flex-[2] flex flex-col gap-2"
                 >
-                  <div className="menu-tag">
-                    <a
-                      href="#"
-                      className="text-2xl max-md:text-xl font-medium text-[#5f5f5f]"
-                    >
-                      Web Architect
-                    </a>
-                  </div>
-                  <div className="menu-tag">
-                    <a
-                      href="#"
-                      className="text-2xl max-md:text-xl font-medium text-[#5f5f5f]"
-                    >
-                      AI Automation
-                    </a>
-                  </div>
-                  <div className="menu-tag">
-                    <a
-                      href="#"
-                      className="text-2xl max-md:text-xl font-medium text-[#5f5f5f]"
-                    >
-                      Angry Musician
-                    </a>
-                  </div>
+                  {isFilled.richText(navigation?.data.tag_1) && (
+                    <div className="menu-tag">
+                      <p className="text-2xl max-md:text-xl font-medium text-[#5f5f5f]">
+                        {asText(navigation.data.tag_1)}
+                      </p>
+                    </div>
+                  )}
+                  {isFilled.richText(navigation?.data.tag_2) && (
+                    <div className="menu-tag">
+                      <p className="text-2xl max-md:text-xl font-medium text-[#5f5f5f]">
+                        {asText(navigation.data.tag_2)}
+                      </p>
+                    </div>
+                  )}
+                  {isFilled.richText(navigation?.data.tag_3) && (
+                    <div className="menu-tag">
+                      <p className="text-2xl max-md:text-xl font-medium text-[#5f5f5f]">
+                        {asText(navigation.data.tag_3)}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
