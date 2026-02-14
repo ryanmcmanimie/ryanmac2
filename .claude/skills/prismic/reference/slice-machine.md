@@ -444,5 +444,35 @@ Add the slice's snake_case ID to `choices`.
 2. **Write model.json:** Define fields and variations
 3. **Write mocks.json:** Create mock data for each variation
 4. **Write index.tsx:** Implement the component
-5. **Register:** Add slice ID to custom type's slice zone
-6. **Regenerate types:** `npx prismic-ts-codegen`
+5. **Register in custom type:** Add slice ID to custom type's slice zone (`customtypes/{type}/index.json`)
+6. **Register in SliceZone:** Add to `src/slices/index.ts` components export
+7. **Regenerate types:** `npx prismic-ts-codegen`
+
+---
+
+## Critical Gotchas
+
+### SliceZone Registration (Step 6)
+
+**If you see:** `Could not find a component for slice type "slice_name"`
+
+**You forgot to register the slice in `src/slices/index.ts`:**
+
+```ts
+import dynamic from "next/dynamic";
+
+export const components = {
+  // ... existing slices
+  my_new_slice: dynamic(() => import("./MyNewSlice")),
+};
+```
+
+The slice ID must be snake_case and match the `id` in model.json.
+
+### Type Generation May Fail
+
+`npx prismic-ts-codegen` sometimes doesn't pick up new slices. If types are missing:
+
+1. Manually add the slice types to `prismicio-types.d.ts`
+2. Add the slice to the `HomeDocumentDataSlicesSlice` union (or relevant custom type)
+3. Add to the `Content` namespace exports at the bottom

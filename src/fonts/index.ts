@@ -1,4 +1,5 @@
 import localFont from "next/font/local";
+import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 
 export const helveticaNeue = localFont({
   src: [
@@ -27,5 +28,19 @@ export const helveticaNeueCn = localFont({
     { path: "../../public/fonts/HelveticaNeueLTProBdCnO.otf", weight: "700", style: "oblique" },
   ],
   variable: "--font-helvetica-cn",
+  display: "swap",
+});
+
+export const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  variable: "--font-instrument-sans",
+  display: "swap",
+});
+
+export const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-instrument-serif",
   display: "swap",
 });

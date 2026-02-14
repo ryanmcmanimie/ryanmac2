@@ -7,4 +7,6 @@ export const components = {
   portfolio_list: dynamic(() => import("./PortfolioList")),
   redact_text: dynamic(() => import("./RedactText")),
   simple_hero: dynamic(() => import("./SimpleHero")),
+  about_duo: dynamic(() => import("./AboutDuo")),
+  split_cards: dynamic(() => import("./SplitCards")),
 };

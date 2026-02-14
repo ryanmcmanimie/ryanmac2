@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import MuxPlayer from "@mux/mux-player-react";
 import type MuxPlayerElement from "@mux/mux-player";
+import { RedactText } from "./RedactText";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -31,6 +32,8 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
   const mobileItemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const playerRefs = useRef<(MuxPlayerElement | null)[]>([]);
   const lastActiveRef = useRef(0);
+  const lastScrollY = useRef(0);
+  const counterRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     let rafId: number | null = null;
@@ -43,8 +46,12 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
         const items = mobileItemRefs.current.filter(Boolean) as HTMLDivElement[];
         if (items.length === 0) return;
 
-        // Target point is 60% down the viewport (keeps items active longer when scrolling down)
-        const targetY = window.innerHeight * 0.6;
+        // Detect scroll direction
+        const scrollingUp = window.scrollY < lastScrollY.current;
+        lastScrollY.current = window.scrollY;
+
+        // Scrolling down: 50% (switch sooner), Scrolling up: -10% (stay active much longer)
+        const targetY = window.innerHeight * (scrollingUp ? 0.5 : 0.5);
         let closestIndex = 0;
         let closestDistance = Infinity;
 
@@ -73,6 +80,27 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
             }
           });
         }
+
+        // Move counter horizontally based on which item is centered
+        const counter = counterRef.current;
+        if (items.length >= 2 && counter) {
+          const firstCenter = items[0].getBoundingClientRect().top + items[0].offsetHeight / 2;
+          const lastCenter = items[items.length - 1].getBoundingClientRect().top + items[items.length - 1].offsetHeight / 2;
+          const viewCenter = window.innerHeight / 2;
+          // Start moving when first item enters lower portion of viewport
+          const startOffset = window.innerHeight * 0.3;
+          const totalSpan = lastCenter - firstCenter;
+          const progress = totalSpan !== 0
+            ? Math.min(1, Math.max(0, (viewCenter - firstCenter + startOffset) / (totalSpan + startOffset)))
+            : 0;
+          const parent = counter.parentElement;
+          if (parent) {
+            const style = getComputedStyle(parent);
+            const contentWidth = parent.offsetWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+            const maxX = contentWidth - counter.offsetWidth;
+            counter.style.transform = `translateX(${progress * maxX}px)`;
+          }
+        }
       });
     };
 
@@ -88,10 +116,12 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
   return (
     <section className="bg-[#141414] text-white font-sans min-h-screen relative">
 
+      <h2 className="text-white uppercase tracking-tighter absolute font-medium top-0 right-6 text-[4rem] z-10 my-6 sm:mt-2 font-serif">Projects</h2>
+
       {/* Portfolio Section - contains sticky header and items */}
       <div className="relative">
         {/* Portfolio Items */}
-        <div className="px-6 py-24 flex flex-col gap-12">
+        <div className="px-6 py-44 sm:py-24 flex flex-col gap-12">
           {projects.map((project, index) => {
             const isActive = currentIndex === index + 1;
             return (
@@ -122,11 +152,11 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
                   )}
                 </div>
                 <div className={`transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-30"}`}>
-                  <h2 className="text-2xl font-medium font-condensed tracking-wide">
+                  <h2 className="text-2xl font-semibold font-serif tracking-wide">
                     {project.name}
                   </h2>
                   {project.subtitle && (
-                    <p className="text-sm text-[#5f5f5f] italic">
+                    <p className="text-sm text-[#5f5f5f] italic mt-0.5">
                       {project.subtitle}
                     </p>
                   )}
@@ -138,9 +168,9 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
 
         {/* Sticky Counter Footer - sticks to bottom when scrolling through section */}
         <div className="sticky bottom-0 z-40 text-[#141414] bg-white px-6 py-4">
-          <h2 className="text-4xl font-extralight leading-none">
+          <h2 ref={counterRef} className="text-5xl font-serif font-bold leading-none inline-block will-change-transform">
             {String(currentIndex).padStart(2, "0")}
-            <span>/{projects.length}</span>
+            <span className="text-2xl ml-1 font-normal">/{String(projects.length).padStart(2, "0")}</span>
           </h2>
         </div>
       </div>
@@ -276,7 +306,9 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
         style={{ backgroundImage: "url('/lines2.jpg')", opacity: 0.02 }}
       />
 
-      <h2 className="text-[#141414] uppercase tracking-tighter -mt-22 absolute font-black top-0 right-8 text-[6rem] z-10 font-condensed">Projects</h2>
+     
+      <h2 className="text-white uppercase tracking-tighter absolute font-medium top-0 right-8 text-[6rem] z-10 mt-2 font-serif">Projects</h2>
+     
 
       {/* Spotlight Section - height accounts for nav */}
       <div
@@ -287,7 +319,7 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
         <div className="project-index">
           <h1
             ref={projectIndexRef}
-            className="uppercase font-condensed text-[8rem] font-extralight leading-none tracking-tight will-change-transform"
+            className="uppercase font-serif text-[8rem] font-extralight leading-none tracking-tight will-change-transform"
           >
             01<span>/{String(projects.length).padStart(2, "0")}</span>
           </h1>
@@ -332,14 +364,14 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
               ref={(el) => { projectNameRefs.current[index] = el; }}
               className="relative text-right text-[#4a4a4a] transition-colors duration-300 will-change-transform"
             >
-              <h3 className="text-3xl font-normal font-condensed leading-tight">
+              <h3 className="text-4xl font-serif font-bold leading-tight">
                 {project.name}
               </h3>
               {project.subtitle && (
                 <div className="absolute top-full right-0 overflow-hidden">
                   <p
                     ref={(el) => { projectSubtitleRefs.current[index] = el; }}
-                    className="italic text-base font-normal font-condensed leading-tight translate-x-[200%] transition-transform duration-500 ease-out"
+                    className="italic font-normal font-condensed leading-tight translate-x-[200%] transition-transform duration-500 ease-out"
                   >
                     {project.subtitle}
                   </p>

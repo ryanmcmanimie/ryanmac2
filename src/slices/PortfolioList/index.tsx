@@ -27,12 +27,12 @@ async function PortfolioList({ slice }: PortfolioListProps) {
     .map(({ name, subtitle, muxPlaybackId }) => ({ name, subtitle, muxPlaybackId }));
 
   return (
-    <section
+    <div
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
     >
       <PortfolioListComponent projects={projects} />
-    </section>
+    </div>
   );
 }
 

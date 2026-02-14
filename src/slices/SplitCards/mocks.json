@@ -1,0 +1,204 @@
+[
+  {
+    "__TYPE__": "SharedSliceContent",
+    "variation": "default",
+    "primary": {
+      "header": {
+        "__TYPE__": "StructuredTextContent",
+        "value": [
+          {
+            "type": "paragraph",
+            "text": "Three pillars with one purpose",
+            "spans": []
+          }
+        ]
+      },
+      "cards": {
+        "__TYPE__": "GroupContentType",
+        "value": [
+          {
+            "__TYPE__": "GroupItemContent",
+            "value": [
+              [
+                "image",
+                {
+                  "__TYPE__": "ImageContent",
+                  "url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=1120&fit=crop",
+                  "origin": {
+                    "id": "main",
+                    "url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&h=1120&fit=crop",
+                    "width": 800,
+                    "height": 1120
+                  },
+                  "width": 800,
+                  "height": 1120,
+                  "edit": {
+                    "zoom": 1,
+                    "crop": { "x": 0, "y": 0 },
+                    "background": "transparent"
+                  },
+                  "credits": null,
+                  "alt": "Card cover 1",
+                  "thumbnails": {}
+                }
+              ],
+              [
+                "label",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Text",
+                  "value": "( 01 )"
+                }
+              ],
+              [
+                "description",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Text",
+                  "value": "Interactive Web Experiences"
+                }
+              ],
+              [
+                "background_color",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Color",
+                  "value": "#b2b2b2"
+                }
+              ],
+              [
+                "text_color",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Color",
+                  "value": "#0f0f0f"
+                }
+              ]
+            ]
+          },
+          {
+            "__TYPE__": "GroupItemContent",
+            "value": [
+              [
+                "image",
+                {
+                  "__TYPE__": "ImageContent",
+                  "url": "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800&h=1120&fit=crop",
+                  "origin": {
+                    "id": "main",
+                    "url": "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800&h=1120&fit=crop",
+                    "width": 800,
+                    "height": 1120
+                  },
+                  "width": 800,
+                  "height": 1120,
+                  "edit": {
+                    "zoom": 1,
+                    "crop": { "x": 0, "y": 0 },
+                    "background": "transparent"
+                  },
+                  "credits": null,
+                  "alt": "Card cover 2",
+                  "thumbnails": {}
+                }
+              ],
+              [
+                "label",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Text",
+                  "value": "( 02 )"
+                }
+              ],
+              [
+                "description",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Text",
+                  "value": "Thoughtful Design Language"
+                }
+              ],
+              [
+                "background_color",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Color",
+                  "value": "#ce2017"
+                }
+              ],
+              [
+                "text_color",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Color",
+                  "value": "#ffffff"
+                }
+              ]
+            ]
+          },
+          {
+            "__TYPE__": "GroupItemContent",
+            "value": [
+              [
+                "image",
+                {
+                  "__TYPE__": "ImageContent",
+                  "url": "https://images.unsplash.com/photo-1579547621113-e4bb2a19bdd6?w=800&h=1120&fit=crop",
+                  "origin": {
+                    "id": "main",
+                    "url": "https://images.unsplash.com/photo-1579547621113-e4bb2a19bdd6?w=800&h=1120&fit=crop",
+                    "width": 800,
+                    "height": 1120
+                  },
+                  "width": 800,
+                  "height": 1120,
+                  "edit": {
+                    "zoom": 1,
+                    "crop": { "x": 0, "y": 0 },
+                    "background": "transparent"
+                  },
+                  "credits": null,
+                  "alt": "Card cover 3",
+                  "thumbnails": {}
+                }
+              ],
+              [
+                "label",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Text",
+                  "value": "( 03 )"
+                }
+              ],
+              [
+                "description",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Text",
+                  "value": "Visual Design Systems"
+                }
+              ],
+              [
+                "background_color",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Color",
+                  "value": "#2f2f2f"
+                }
+              ],
+              [
+                "text_color",
+                {
+                  "__TYPE__": "FieldContent",
+                  "type": "Color",
+                  "value": "#ffffff"
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "items": []
+  }
+]

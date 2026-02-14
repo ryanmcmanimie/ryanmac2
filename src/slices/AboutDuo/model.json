@@ -1,0 +1,37 @@
+{
+  "id": "about_duo",
+  "type": "SharedSlice",
+  "name": "AboutDuo",
+  "description": "About Me / Ai section with animated tab switching",
+  "variations": [
+    {
+      "id": "default",
+      "name": "Default",
+      "docURL": "...",
+      "version": "initial",
+      "description": "Default variation",
+      "imageUrl": "",
+      "primary": {
+        "about_me": {
+          "type": "StructuredText",
+          "config": {
+            "label": "About Me",
+            "placeholder": "Enter About Me content",
+            "allowTargetBlank": true,
+            "multi": "paragraph,strong,em,hyperlink"
+          }
+        },
+        "about_ai": {
+          "type": "StructuredText",
+          "config": {
+            "label": "About Ai",
+            "placeholder": "Enter About Ai content",
+            "allowTargetBlank": true,
+            "multi": "paragraph,strong,em,hyperlink"
+          }
+        }
+      },
+      "items": {}
+    }
+  ]
+}

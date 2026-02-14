@@ -9,7 +9,7 @@ const GlassHero: FC<GlassHeroProps> = ({ slice }) => {
   const { background_image_desktop, background_image_mobile, headline, tagline } = slice.primary;
 
   return (
-    <div
+    <section
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
     >
@@ -19,7 +19,7 @@ const GlassHero: FC<GlassHeroProps> = ({ slice }) => {
         headline={headline ? asText(headline) : undefined}
         tagline={tagline ?? undefined}
       />
-    </div>
+    </section>
   );
 };
 

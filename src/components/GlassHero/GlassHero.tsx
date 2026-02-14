@@ -144,6 +144,31 @@ export function GlassHero({
       targetMouse.y = 1.0 - e.clientY / window.innerHeight;
     };
 
+    // Touch support for mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartMouseX = 0.5;
+    let touchStartMouseY = 0.5;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      touchStartMouseX = targetMouse.x;
+      touchStartMouseY = targetMouse.y;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      const deltaX = (touch.clientX - touchStartX) / window.innerWidth;
+      const deltaY = (touch.clientY - touchStartY) / window.innerHeight;
+
+      // Amplify the movement for a more noticeable effect
+      const sensitivity = 3.0;
+      targetMouse.x = Math.max(0, Math.min(1, touchStartMouseX + deltaX * sensitivity));
+      targetMouse.y = Math.max(0, Math.min(1, touchStartMouseY - deltaY * sensitivity));
+    };
+
     const handleResize = () => {
       if (!container) return;
       renderer.setSize(container.clientWidth, container.clientHeight);
@@ -155,6 +180,8 @@ export function GlassHero({
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("resize", handleResize);
+    container.addEventListener("touchstart", handleTouchStart, { passive: true });
+    container.addEventListener("touchmove", handleTouchMove, { passive: true });
 
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
@@ -171,6 +198,8 @@ export function GlassHero({
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      container.removeEventListener("touchstart", handleTouchStart);
+      container.removeEventListener("touchmove", handleTouchMove);
       cancelAnimationFrame(frameRef.current);
 
       if (rendererRef.current && container) {
@@ -189,13 +218,11 @@ export function GlassHero({
 
   return (
     <section
-      className="relative w-full overflow-hidden"
+      className={`relative w-full overflow-hidden ${!fixedHeight ? "h-dvh" : ""}`}
       style={{
         ["--desktop-marquee" as string]: `${marqueeHeight}px`,
         ["--mobile-marquee" as string]: `${mobileMarqueeHeight}px`,
-        height: fixedHeight
-          ? `${fixedHeight + currentMarqueeHeight}px`
-          : `calc(100svh + ${currentMarqueeHeight}px)`,
+        ...(fixedHeight && { height: `${fixedHeight}px` }),
       }}
     >
       {/* Hidden image for SEO/accessibility */}
@@ -212,16 +239,16 @@ export function GlassHero({
 
       {/* Logo marquee - positioned at bottom, 75% width with slanted edge */}
       <div
-        className="absolute bottom-0 left-0 w-3/4 h-[var(--mobile-marquee)] md:h-[var(--desktop-marquee)]"
+        className="absolute bottom-0 left-0 w-4/5 sm:w-3/4 h-[var(--mobile-marquee)] md:h-[var(--desktop-marquee)]"
       >
         <LogoMarquee height={marqueeHeight} />
       </div>
 
       {/* Hero content overlay - positioned above the marquee */}
       <div
-        className="absolute left-0 w-full p-8 flex justify-between items-end max-md:flex-col-reverse max-md:items-start max-md:gap-4 bottom-[var(--mobile-marquee)] md:bottom-[var(--desktop-marquee)]"
+        className="absolute left-0 w-full p-5 sm:p-8 flex flex-col-reverse items-start gap-20 bottom-[var(--mobile-marquee)] md:bottom-[var(--desktop-marquee)]"
       >
-        <h1 className="font-light w-3/5 max-md:w-full text-white text-6xl max-md:text-4xl tracking-tight leading-none">
+        <h1 className="font-light font-serif w-3/5 max-md:w-full text-white text-8xl max-md:text-6xl tracking-tight leading-none">
           {headline}
         </h1>
         {tagline && <p className="text-white text-sm font-medium">{tagline}</p>}

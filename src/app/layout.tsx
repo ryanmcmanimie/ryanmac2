@@ -4,7 +4,7 @@ import { PrismicPreview } from "@prismicio/next";
 import { createClient, repositoryName } from "@/prismicio";
 import { LenisProvider, LogosProvider } from "@/providers";
 import { PushMenuProvider } from "@/components/PushMenu";
-import { helveticaNeue, helveticaNeueCn } from "@/fonts";
+import { helveticaNeue, helveticaNeueCn, instrumentSans, instrumentSerif } from "@/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ export default async function RootLayout({
   return (
     <ViewTransitions>
       <html lang="en">
-        <body className={`${helveticaNeue.variable} ${helveticaNeueCn.variable} antialiased`}>
+        <body className={`${helveticaNeue.variable} ${helveticaNeueCn.variable} ${instrumentSans.variable} ${instrumentSerif.variable} text-base md:text-lg antialiased`}>
           <LenisProvider>
             <LogosProvider logos={logos}>
               <PushMenuProvider navigation={navigation} settings={settings}>

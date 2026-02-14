@@ -231,7 +231,9 @@ export type BlogPostDocument<Lang extends string = string> =
 type HomeDocumentDataSlicesSlice =
   | RedactTextSlice
   | PortfolioListSlice
-  | GlassHeroSlice;
+  | GlassHeroSlice
+  | AboutDuoSlice
+  | SplitCardsSlice;
 
 /**
  * Content for Home documents
@@ -931,6 +933,171 @@ export type SimpleHeroSlice = prismic.SharedSlice<
   SimpleHeroSliceVariation
 >;
 
+/**
+ * Item in *SplitCards → Default → Primary → Cards*
+ */
+export interface SplitCardsSliceDefaultPrimaryCardsItem {
+  /**
+   * Card Image field in *SplitCards → Default → Primary → Cards*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: split_cards.default.primary.cards[].image
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  image: prismic.ImageField<never>;
+
+  /**
+   * Label field in *SplitCards → Default → Primary → Cards*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: e.g., ( 01 )
+   * - **API ID Path**: split_cards.default.primary.cards[].label
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  label: prismic.KeyTextField;
+
+  /**
+   * Description field in *SplitCards → Default → Primary → Cards*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: Card back description
+   * - **API ID Path**: split_cards.default.primary.cards[].description
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  description: prismic.KeyTextField;
+
+  /**
+   * Background Color field in *SplitCards → Default → Primary → Cards*
+   *
+   * - **Field Type**: Color
+   * - **Placeholder**: *None*
+   * - **API ID Path**: split_cards.default.primary.cards[].background_color
+   * - **Documentation**: https://prismic.io/docs/fields/color
+   */
+  background_color: prismic.ColorField;
+
+  /**
+   * Text Color field in *SplitCards → Default → Primary → Cards*
+   *
+   * - **Field Type**: Color
+   * - **Placeholder**: *None*
+   * - **API ID Path**: split_cards.default.primary.cards[].text_color
+   * - **Documentation**: https://prismic.io/docs/fields/color
+   */
+  text_color: prismic.ColorField;
+}
+
+/**
+ * Primary content in *SplitCards → Default → Primary*
+ */
+export interface SplitCardsSliceDefaultPrimary {
+  /**
+   * Header field in *SplitCards → Default → Primary*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: Enter section header
+   * - **API ID Path**: split_cards.default.primary.header
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  header: prismic.RichTextField;
+
+  /**
+   * Cards field in *SplitCards → Default → Primary*
+   *
+   * - **Field Type**: Group
+   * - **Placeholder**: *None*
+   * - **API ID Path**: split_cards.default.primary.cards[]
+   * - **Documentation**: https://prismic.io/docs/fields/repeatable-group
+   */
+  cards: prismic.GroupField<Simplify<SplitCardsSliceDefaultPrimaryCardsItem>>;
+}
+
+/**
+ * Default variation for SplitCards Slice
+ *
+ * - **API ID**: `default`
+ * - **Description**: Default variation
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type SplitCardsSliceDefault = prismic.SharedSliceVariation<
+  "default",
+  Simplify<SplitCardsSliceDefaultPrimary>,
+  never
+>;
+
+/**
+ * Slice variation for *SplitCards*
+ */
+type SplitCardsSliceVariation = SplitCardsSliceDefault;
+
+/**
+ * SplitCards Shared Slice
+ *
+ * - **API ID**: `split_cards`
+ * - **Description**: Split card scroll animation with flip effect
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type SplitCardsSlice = prismic.SharedSlice<
+  "split_cards",
+  SplitCardsSliceVariation
+>;
+
+/**
+ * Primary content in *AboutDuo → Default → Primary*
+ */
+export interface AboutDuoSliceDefaultPrimary {
+  /**
+   * About Me field in *AboutDuo → Default → Primary*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: Enter About Me content
+   * - **API ID Path**: about_duo.default.primary.about_me
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  about_me: prismic.RichTextField;
+
+  /**
+   * About Ai field in *AboutDuo → Default → Primary*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: Enter About Ai content
+   * - **API ID Path**: about_duo.default.primary.about_ai
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  about_ai: prismic.RichTextField;
+}
+
+/**
+ * Default variation for AboutDuo Slice
+ *
+ * - **API ID**: `default`
+ * - **Description**: Default variation
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type AboutDuoSliceDefault = prismic.SharedSliceVariation<
+  "default",
+  Simplify<AboutDuoSliceDefaultPrimary>,
+  never
+>;
+
+/**
+ * Slice variation for *AboutDuo*
+ */
+type AboutDuoSliceVariation = AboutDuoSliceDefault;
+
+/**
+ * AboutDuo Shared Slice
+ *
+ * - **API ID**: `about_duo`
+ * - **Description**: About Me / Ai section with animated tab switching
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type AboutDuoSlice = prismic.SharedSlice<
+  "about_duo",
+  AboutDuoSliceVariation
+>;
+
 declare module "@prismicio/client" {
   interface CreateClient {
     (
@@ -993,6 +1160,15 @@ declare module "@prismicio/client" {
       SimpleHeroSliceDefaultPrimary,
       SimpleHeroSliceVariation,
       SimpleHeroSliceDefault,
+      SplitCardsSlice,
+      SplitCardsSliceDefaultPrimary,
+      SplitCardsSliceDefaultPrimaryCardsItem,
+      SplitCardsSliceVariation,
+      SplitCardsSliceDefault,
+      AboutDuoSlice,
+      AboutDuoSliceDefaultPrimary,
+      AboutDuoSliceVariation,
+      AboutDuoSliceDefault,
     };
   }
 }

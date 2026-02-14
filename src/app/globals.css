@@ -2,10 +2,12 @@
 
 @theme inline {
   --animate-marquee: marquee var(--marquee-speed, 50s) linear infinite;
+  --animate-aurora: aurora 60s linear infinite;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-helvetica), sans-serif;
   --font-condensed: var(--font-helvetica-cn), sans-serif;
+  --font-serif: var(--font-instrument-serif), serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
@@ -24,7 +26,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-helvetica), sans-serif;
+  font-family: var(--font-instrument-sans), sans-serif;
 }
 
 .project-index span {
@@ -97,5 +99,14 @@ body {
 
   .logo-marquee .animate-marquee {
     --marquee-speed: 47s;
+  }
+}
+
+@keyframes aurora {
+  from {
+    background-position: 50% 50%, 50% 50%;
+  }
+  to {
+    background-position: 350% 50%, 350% 50%;
   }
 }

@@ -21,6 +21,9 @@ import { CustomEase } from "gsap/CustomEase";
 import { SplitText } from "gsap/SplitText";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLenis } from "@/providers/LenisProvider";
+import { Footer } from "@/components/Footer";
+import { ContactSection } from "@/components/ContactSection";
+import { AnimatedHamburgerButton } from "@/components/AnimatedHamburger";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(CustomEase, SplitText, ScrollTrigger);
@@ -82,9 +85,12 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
   const lenis = useLenis();
   const router = useTransitionRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [isOverLight, setIsOverLight] = useState(false);
+  const [leftOverLight, setLeftOverLight] = useState(false);
+  const [rightOverLight, setRightOverLight] = useState(false);
   const [isFloating, setIsFloating] = useState(false);
   const isAnimatingRef = useRef(false);
+  const isOpenRef = useRef(false);
+  const isPastHeroRef = useRef(false);
   const menuBarRef = useRef<HTMLDivElement>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -92,20 +98,37 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
   const menuOverlayContentRef = useRef<HTMLDivElement>(null);
   const menuMediaWrapperRef = useRef<HTMLDivElement>(null);
   const menuToggleLabelRef = useRef<HTMLParagraphElement>(null);
-  const hamburgerIconRef = useRef<HTMLDivElement>(null);
   const menuColsRef = useRef<HTMLDivElement[]>([]);
   const splitTextRef = useRef<{ container: HTMLDivElement; splits: SplitText[] }[]>([]);
+
+  // Keep isOpen ref in sync for scroll handler access
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
 
   // Detect when nav is over light sections
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    let lightSections: Element[] = [];
+    let bothSections: Element[] = [];
+    let leftOnlySections: Element[] = [];
+    let rightOnlySections: Element[] = [];
     let rafId: number | null = null;
-    let lastOverLight = false;
+    let lastLeft = false;
+    let lastRight = false;
 
     const cacheSections = () => {
-      lightSections = Array.from(document.querySelectorAll('[data-nav-theme="light"]'));
+      bothSections = Array.from(document.querySelectorAll('[data-nav-theme="light"]'));
+      leftOnlySections = Array.from(document.querySelectorAll('[data-nav-theme-left="light"]'));
+      rightOnlySections = Array.from(document.querySelectorAll('[data-nav-theme-right="light"]'));
+    };
+
+    const isOverSection = (sections: Element[], navY: number) => {
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= navY && rect.bottom >= navY) return true;
+      }
+      return false;
     };
 
     const checkNavTheme = () => {
@@ -114,25 +137,36 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
       rafId = requestAnimationFrame(() => {
         rafId = null;
         const navY = 60;
-        let overLight = false;
 
-        for (const section of lightSections) {
-          const rect = section.getBoundingClientRect();
-          if (rect.top <= navY && rect.bottom >= navY) {
-            overLight = true;
-            break;
-          }
+        const overBoth = isOverSection(bothSections, navY);
+        const left = overBoth || isOverSection(leftOnlySections, navY);
+        const right = overBoth || isOverSection(rightOnlySections, navY);
+
+        if (left !== lastLeft) {
+          lastLeft = left;
+          setLeftOverLight(left);
         }
-
-        // Only update state if changed
-        if (overLight !== lastOverLight) {
-          lastOverLight = overLight;
-          setIsOverLight(overLight);
+        if (right !== lastRight) {
+          lastRight = right;
+          setRightOverLight(right);
         }
 
         // Check if floating (scrolled past threshold)
         const floating = window.scrollY > 20;
         setIsFloating(floating);
+
+        // Hide "Menu" label when scrolled past hero
+        const pastHero = window.scrollY > window.innerHeight;
+        if (pastHero !== isPastHeroRef.current) {
+          isPastHeroRef.current = pastHero;
+          if (!isOpenRef.current && menuToggleLabelRef.current) {
+            gsap.to(menuToggleLabelRef.current, {
+              y: pastHero ? "-110%" : "0%",
+              duration: 0.6,
+              ease: "hop",
+            });
+          }
+        }
       });
     };
 
@@ -185,6 +219,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
   const openMenu = () => {
     if (isAnimatingRef.current || isOpen) return;
     isAnimatingRef.current = true;
+    setIsOpen(true);
 
     lenis?.stop();
 
@@ -227,19 +262,15 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
       }, -0.15);
     });
 
-    hamburgerIconRef.current?.classList.add("active");
-
     tl.call(() => {
       isAnimatingRef.current = false;
-      setIsOpen(true);
     });
   };
 
   const closeMenu = () => {
     if (isAnimatingRef.current || !isOpen) return;
     isAnimatingRef.current = true;
-
-    hamburgerIconRef.current?.classList.remove("active");
+    setIsOpen(false);
 
     const tl = gsap.timeline();
 
@@ -279,8 +310,16 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
       gsap.set(menuMediaWrapperRef.current, { opacity: 0 });
 
       isAnimatingRef.current = false;
-      setIsOpen(false);
       lenis?.start();
+
+      // Re-hide "Menu" label if scrolled past hero
+      if (isPastHeroRef.current && menuToggleLabelRef.current) {
+        gsap.to(menuToggleLabelRef.current, {
+          y: "-110%",
+          duration: 0.6,
+          ease: "hop",
+        });
+      }
 
       // Refresh ScrollTrigger after menu close to recalculate positions
       ScrollTrigger.refresh();
@@ -303,7 +342,6 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
 
   const resetMenuState = useCallback(() => {
     // Immediately reset menu to closed state (no animation)
-    hamburgerIconRef.current?.classList.remove("active");
     gsap.set(containerRef.current, { y: "0svh" });
     gsap.set(menuOverlayRef.current, { clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)" });
     gsap.set(menuOverlayContentRef.current, { yPercent: -50 });
@@ -318,6 +356,10 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
     isAnimatingRef.current = false;
     setIsOpen(false);
     lenis?.start();
+
+    // Reset label visibility
+    isPastHeroRef.current = false;
+    gsap.set(menuToggleLabelRef.current, { y: "0%" });
   }, [lenis]);
 
   const handleMenuLinkClick = useCallback(
@@ -349,12 +391,12 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
         {/* Menu Bar */}
         <div
           ref={menuBarRef}
-          className={`fixed top-0 left-0 w-screen p-5 sm:p-8 flex justify-between items-center pointer-events-auto z-50 transition-all duration-300 ${isOverLight && !isOpen ? "**:text-black! [&_.hamburger-line]:bg-black! [&_.hamburger-icon]:border-black!" : ""} ${isFloating && !isOpen ? "max-sm:backdrop-blur-sm" : ""}`}
+          className={`fixed top-0 left-0 w-screen p-5 sm:p-8 flex justify-between items-center pointer-events-auto z-50 transition-all duration-300 ${isFloating && !isOpen ? "max-sm:backdrop-blur-sm" : ""}`}
         >
           {/* Logo */}
           <a
             href="/"
-            className="block"
+            className={`block transition-all duration-300 ${leftOverLight && !isOpen ? "**:text-black!" : ""}`}
             onClick={(e) => {
               e.preventDefault();
               if (isOpen) {
@@ -370,29 +412,25 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
               alt="Ryan Mac"
               width={144}
               height={29}
-              className={`transition-all duration-300 ${isOverLight && !isOpen ? "invert" : ""}`}
+              className={`transition-all duration-300 ${leftOverLight && !isOpen ? "invert" : ""}`}
             />
           </a>
 
           {/* Toggle Button */}
           <div
-            className="flex items-center gap-4 cursor-pointer"
+            className={`-mt-3 flex items-center gap-4 cursor-pointer transition-all duration-300 ${rightOverLight && !isOpen ? "**:text-black! [&_.hamburger-wrapper]:border-black! [&_.hamburger-wrapper]:text-black!" : ""}`}
             onClick={toggle}
           >
             <div className="overflow-hidden max-sm:hidden">
               <p
                 ref={menuToggleLabelRef}
-                className="text-sm font-medium will-change-transform text-white"
+                className="text-sm tracking-wider font-bold will-change-transform text-white uppercase"
               >
                 Menu
               </p>
             </div>
-            <div
-              ref={hamburgerIconRef}
-              className="hamburger-icon relative w-12 h-12 flex justify-center items-center border border-white rounded-full"
-            >
-              <span className="hamburger-line absolute w-[15px] h-[2.25px] bg-white transition-[transform] duration-700 ease-[cubic-bezier(0.87,0,0.13,1)] origin-center will-change-transform" />
-              <span className="hamburger-line absolute w-[15px] h-[2.25px] bg-white transition-[transform] duration-700 ease-[cubic-bezier(0.87,0,0.13,1)] origin-center will-change-transform" />
+            <div className="hamburger-wrapper relative max-sm:w-[28px] max-sm:h-[28px] sm:w-[70px] sm:h-[70px] flex justify-center items-center sm:border-none sm:border-white rounded-lg text-white pointer-events-none">
+              <AnimatedHamburgerButton isOpen={isOpen} />
             </div>
           </div>
         </div>
@@ -434,7 +472,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                     <div key={index} className="menu-link">
                       <PrismicLink
                         field={item.url}
-                        className="text-5xl max-md:text-4xl font-normal leading-tight"
+                        className="text-6xl max-md:text-5xl font-serif font-semibold leading-tight"
                         onClick={(e) => handleMenuLinkClick(e, asLink(item.url))}
                       >
                         {item.label}
@@ -478,7 +516,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                   className="flex-[3] flex flex-col gap-2"
                 >
                   {settings?.data.location && (
-                    <p className="text-sm font-medium text-[#5f5f5f]">
+                    <p className="font-medium text-[#5f5f5f]">
                       {asText(settings.data.location)}
                     </p>
                   )}
@@ -488,12 +526,12 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                   className="flex-[2] flex flex-col gap-2"
                 >
                   {settings?.data.phone && (
-                    <p className="text-sm font-medium text-[#5f5f5f]">
+                    <p className="font-medium text-[#5f5f5f]">
                       {asText(settings.data.phone)}
                     </p>
                   )}
                   {settings?.data.email && (
-                    <p className="text-sm font-medium text-[#5f5f5f]">
+                    <p className="font-medium text-[#5f5f5f]">
                       {asText(settings.data.email)}
                     </p>
                   )}
@@ -509,23 +547,13 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
         ref={containerRef}
         className="relative z-10 bg-[#171717] text-white"
       >
-        {children}
+        <main>{children}</main>
+        <ContactSection />
+        <Footer />
       </div>
 
-      {/* Hamburger icon active styles */}
+      {/* Menu line styles */}
       <style jsx global>{`
-        .hamburger-icon .hamburger-line:nth-child(1) {
-          transform: translateY(-4px);
-        }
-        .hamburger-icon .hamburger-line:nth-child(2) {
-          transform: translateY(4px);
-        }
-        .hamburger-icon.active .hamburger-line:nth-child(1) {
-          transform: translateY(0) rotate(45deg);
-        }
-        .hamburger-icon.active .hamburger-line:nth-child(2) {
-          transform: translateY(0) rotate(-45deg);
-        }
         .menu-line {
           position: relative;
           will-change: transform;

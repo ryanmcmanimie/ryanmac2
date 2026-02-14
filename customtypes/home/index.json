@@ -19,6 +19,12 @@
             },
             "glass_hero": {
               "type": "SharedSlice"
+            },
+            "about_duo": {
+              "type": "SharedSlice"
+            },
+            "split_cards": {
+              "type": "SharedSlice"
             }
           }
         }
