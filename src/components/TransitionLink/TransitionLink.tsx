@@ -7,6 +7,9 @@ import type { LinkField } from "@prismicio/client";
 import { asLink } from "@prismicio/client";
 
 function slideInOut() {
+  const isMobile = "ontouchstart" in window || window.innerWidth < 768;
+  const duration = isMobile ? 800 : 1500;
+
   document.documentElement.animate(
     [
       {
@@ -19,31 +22,47 @@ function slideInOut() {
       },
     ],
     {
-      duration: 1500,
+      duration,
       easing: "cubic-bezier(0.87, 0, 0.13, 1)",
       fill: "forwards",
       pseudoElement: "::view-transition-old(root)",
     }
   );
 
-  document.documentElement.animate(
-    [
+  if (isMobile) {
+    // Simpler opacity + transform on mobile (avoids expensive clipPath)
+    document.documentElement.animate(
+      [
+        { opacity: 0, transform: "translateY(8%)" },
+        { opacity: 1, transform: "translateY(0)" },
+      ],
       {
-        clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
-        opacity: 1,
-      },
+        duration,
+        easing: "cubic-bezier(0.87, 0, 0.13, 1)",
+        fill: "forwards",
+        pseudoElement: "::view-transition-new(root)",
+      }
+    );
+  } else {
+    document.documentElement.animate(
+      [
+        {
+          clipPath: "polygon(0% 100%, 100% 100%, 100% 100%, 0% 100%)",
+          opacity: 1,
+        },
+        {
+          clipPath: "polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)",
+          opacity: 1,
+        },
+      ],
       {
-        clipPath: "polygon(0% 100%, 100% 100%, 100% 0%, 0% 0%)",
-        opacity: 1,
-      },
-    ],
-    {
-      duration: 1500,
-      easing: "cubic-bezier(0.87, 0, 0.13, 1)",
-      fill: "forwards",
-      pseudoElement: "::view-transition-new(root)",
-    }
-  );
+        duration,
+        easing: "cubic-bezier(0.87, 0, 0.13, 1)",
+        fill: "forwards",
+        pseudoElement: "::view-transition-new(root)",
+      }
+    );
+  }
 }
 
 interface TransitionLinkProps {

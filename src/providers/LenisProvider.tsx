@@ -13,6 +13,18 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
+
+  // Force GPU compositing and auto-kill conflicting tweens on touch devices
+  if ("ontouchstart" in window) {
+    gsap.config({ force3D: true });
+    gsap.defaults({ overwrite: "auto" });
+  }
+
+  // Respect reduced-motion preference: skip GSAP animations entirely
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    gsap.globalTimeline.timeScale(100);
+    gsap.defaults({ duration: 0 });
+  }
 }
 
 interface LenisContextType {
@@ -37,8 +49,14 @@ export function LenisProvider({ children }: LenisProviderProps) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
+    const isTouchDevice = "ontouchstart" in window;
     const lenis = new Lenis({
-      smoothTouch: false, // Let native mobile touch scrolling handle momentum
+      // On touch devices, let Lenis ignore touch-initiated scroll events entirely
+      // so native iOS/Android momentum scrolling takes over
+      ...(isTouchDevice && {
+        virtualScroll: (data: { event: Event }) =>
+          !(data.event instanceof TouchEvent),
+      }),
     });
     lenisRef.current = lenis;
 

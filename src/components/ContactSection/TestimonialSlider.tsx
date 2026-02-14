@@ -71,7 +71,7 @@ export function TestimonialSlider() {
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
         const isActive = i === activeIndex;
-        const baseHeight = card.offsetWidth * (isMobile ? 1.4 : 2);
+        const baseHeight = card.offsetWidth * (isMobile ? 1.68 : 2);
         gsap.set(card, {
           height: isActive ? baseHeight * 1.1 : baseHeight,
           opacity: isActive ? 1 : 0.3,
@@ -104,7 +104,7 @@ export function TestimonialSlider() {
       if (!card) return;
       gsap.killTweensOf(card);
       const isActive = i === activeIndex;
-      const baseHeight = card.offsetWidth * (isMobile ? 1.4 : 2);
+      const baseHeight = card.offsetWidth * (isMobile ? 1.68 : 2);
       gsap.to(card, {
         height: isActive ? baseHeight * 1.1 : baseHeight,
         opacity: isActive ? 1 : 0.3,
@@ -149,10 +149,10 @@ export function TestimonialSlider() {
   // Responsive sizing: mobile cards 70vw with 15% peek on each side, half gap
   const cardWidthCSS = isMobile ? "70vw" : "calc(22.222vw - 2.5rem)";
   const stripHeight = isMobile
-    ? "calc(98vw * 1.1)"
+    ? "calc(117.6vw * 1.1)"
     : "calc((22.222vw - 2.5rem) * 2.2)";
   const containerMinHeight = isMobile
-    ? "calc(98vw * 1.1 + 2rem)"
+    ? "calc(117.6vw * 1.1 + 2rem)"
     : "calc((22.222vw - 2.5rem) * 2.2 + 2rem)";
 
   return (
@@ -186,7 +186,7 @@ export function TestimonialSlider() {
               className="flex-shrink-0 relative overflow-hidden rounded-lg cursor-pointer"
               style={{
                 width: cardWidthCSS,
-                aspectRatio: isMobile ? "1 / 1.4" : "1 / 2",
+                aspectRatio: isMobile ? "1 / 1.68" : "1 / 2",
                 opacity: i === BASE_COUNT + 1 ? 1 : 0.3,
                 filter: i === BASE_COUNT + 1 ? "grayscale(0) blur(0px)" : "grayscale(1) blur(0.5px)",
               }}

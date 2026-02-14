@@ -3,7 +3,7 @@
 import { FC, useRef, useLayoutEffect, useState, useCallback } from "react";
 import { Content } from "@prismicio/client";
 import { SliceComponentProps, PrismicRichText } from "@prismicio/react";
-import { PiArrowBendRightUpFill, PiArrowBendRightDownFill } from "react-icons/pi";
+import { PiArrowBendRightUpFill, PiArrowBendRightDownFill, PiCaretRightBold, PiCaretLeftBold } from "react-icons/pi";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -53,20 +53,17 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
       }
 
       // Mobile: "About" collapses from one word and expands before the other
-      // Uses scaleX instead of width to stay on the GPU compositor
       if (mobileAboutMeRef.current && mobileAboutAiRef.current) {
         const hiding = tab === "ai" ? mobileAboutMeRef.current : mobileAboutAiRef.current;
         const showing = tab === "ai" ? mobileAboutAiRef.current : mobileAboutMeRef.current;
 
         gsap.to(hiding, {
-          scaleX: 0,
-          transformOrigin: "right center",
+          width: 0,
           duration: 0.5,
           ease: "power3.inOut",
         });
         gsap.to(showing, {
-          scaleX: 1,
-          transformOrigin: "left center",
+          width: "auto",
           duration: 0.5,
           ease: "power3.inOut",
         });
@@ -139,7 +136,7 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
 
     // Mobile: collapse the Ai "About" so only "About Me / Ai" is visible
     if (mobileAboutAiRef.current) {
-      gsap.set(mobileAboutAiRef.current, { scaleX: 0, transformOrigin: "left center" });
+      gsap.set(mobileAboutAiRef.current, { width: 0 });
     }
 
     // Build paused timeline
@@ -290,12 +287,13 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
                 className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold will-change-transform"
               >
                 <PrismicRichText field={slice.primary.about_me} />
-                <div className="flex justify-end mt-9">
+                <div className="flex md:justify-end justify-end mt-9">
                   <button
                     onClick={() => switchTab("ai")}
                     className="group text-lg sm:text-xl font-bold text-black transition-opacity duration-300 hover:opacity-80"
                   >
-                    What about Ai? <PiArrowBendRightUpFill className="inline-block -mt-4 text-2xl transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-0.5" />
+                    <span className="hidden md:inline">What about Ai? <PiArrowBendRightUpFill className="inline-block -mt-4 text-2xl transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-0.5" /></span>
+                    <span className="inline md:hidden">What about Ai? <PiCaretRightBold className="inline-block text-xl transition-transform duration-300 group-hover:translate-x-0.5" /></span>
                   </button>
                 </div>
               </div>
@@ -304,12 +302,13 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
                 className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold will-change-transform"
               >
                 <PrismicRichText field={slice.primary.about_ai} />
-                <div className="flex justify-end mt-9">
+                <div className="flex md:justify-end justify-start mt-9">
                   <button
                     onClick={() => switchTab("me")}
                     className="group text-lg sm:text-xl font-bold text-black transition-opacity duration-300 hover:opacity-80"
                   >
-                    More About Me <PiArrowBendRightDownFill className="inline-block mt-4 text-2xl transition-transform duration-300 group-hover:scale-125 group-hover:translate-y-0.5" />
+                    <span className="hidden md:inline">More About Me <PiArrowBendRightDownFill className="inline-block mt-4 text-2xl transition-transform duration-300 group-hover:scale-125 group-hover:translate-y-0.5" /></span>
+                    <span className="inline md:hidden"><PiCaretLeftBold className="inline-block text-xl transition-transform duration-300 group-hover:-translate-x-0.5" /> More About Me</span>
                   </button>
                 </div>
               </div>

@@ -2,7 +2,7 @@
 
 export function ContactForm() {
   return (
-    <div className="h-full flex flex-col bg-[#000] mb-32 sm:mb-0">
+    <div className="h-full flex flex-col bg-[#000]">
       {/* Contact Info */}
       <div className="p-8 sm:p-14 py-12 flex flex-col gap-4">
         <h2 className="text-5xl font-bold italic text-white font-serif">
@@ -30,7 +30,7 @@ export function ContactForm() {
       </div>
 
       {/* Form */}
-      <div className="bg-[#86DEAD] p-8 py-12 sm:p-14 flex-1 flex flex-col gap-4">
+      <div className="bg-[#86DEAD] p-8 py-12 pb-40 sm:p-14 flex-1 flex flex-col gap-4">
         <input
           type="text"
           placeholder="Name"

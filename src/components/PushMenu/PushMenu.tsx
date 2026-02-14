@@ -138,9 +138,13 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
         rafId = null;
         const navY = 60;
 
+        const isMobile = window.innerWidth < 1024;
         const overBoth = isOverSection(bothSections, navY);
-        const left = overBoth || isOverSection(leftOnlySections, navY);
-        const right = overBoth || isOverSection(rightOnlySections, navY);
+        const overLeft = isOverSection(leftOnlySections, navY);
+        const overRight = isOverSection(rightOnlySections, navY);
+
+        const left = overBoth || overLeft || (isMobile && overRight);
+        const right = overBoth || overRight || (isMobile && overLeft);
 
         if (left !== lastLeft) {
           lastLeft = left;
@@ -391,7 +395,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
         {/* Menu Bar */}
         <div
           ref={menuBarRef}
-          className={`fixed top-0 left-0 w-screen p-5 sm:p-8 flex justify-between items-center pointer-events-auto z-50 transition-all duration-300 ${isFloating && !isOpen ? "max-sm:backdrop-blur-sm" : ""}`}
+          className={`fixed top-0 left-0 w-screen p-5 sm:p-8 flex justify-between items-center pointer-events-auto z-50 transition-all duration-300 ${isFloating && !isOpen ? `max-sm:backdrop-blur-sm ${leftOverLight ? "max-sm:bg-white/80" : "max-sm:bg-black/80"}` : ""}`}
         >
           {/* Logo */}
           <a
@@ -526,14 +530,22 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                   className="flex-[2] flex flex-col gap-2"
                 >
                   {settings?.data.phone && (
-                    <p className="font-medium text-[#5f5f5f]">
+                    <a
+                      href={`https://wa.me/${asText(settings.data.phone).replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-white transition-opacity duration-300 hover:opacity-60"
+                    >
                       {asText(settings.data.phone)}
-                    </p>
+                    </a>
                   )}
                   {settings?.data.email && (
-                    <p className="font-medium text-[#5f5f5f]">
+                    <a
+                      href={`mailto:${asText(settings.data.email)}`}
+                      className="font-medium text-white transition-opacity duration-300 hover:opacity-60"
+                    >
                       {asText(settings.data.email)}
-                    </p>
+                    </a>
                   )}
                 </div>
               </div>
