@@ -9,7 +9,15 @@ export function ContactSection() {
     <section className="relative w-full bg-neutral-100 overflow-hidden">
       {/* Mobile: stacked layout */}
       <div className="flex flex-col lg:hidden">
-        <div data-nav-theme="light" className="py-20">
+        <div data-nav-theme="light" className="py-14 sm:py-20">
+          <div className="px-6 pb-8 text-center">
+            <h2 className="text-5xl font-serif font-semibold tracking-tight text-[#141414]">
+              From brief to better
+            </h2>
+            <p className="text-black/50 mt-2 leading-relaxed">
+              It's trite but I genuinely strive to build business relationships that last well beyond the initial deliverable.
+            </p>
+          </div>
           <TestimonialSlider />
         </div>
         <ContactForm />

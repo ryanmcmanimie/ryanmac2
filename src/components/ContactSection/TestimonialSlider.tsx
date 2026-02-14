@@ -74,7 +74,6 @@ export function TestimonialSlider() {
   const mobileScrollRef = useRef<HTMLDivElement>(null);
   const leftArrowRef = useRef<HTMLSpanElement>(null);
   const rightArrowRef = useRef<HTMLSpanElement>(null);
-  const lastScrollLeft = useRef(0);
 
   // Triple the testimonials for infinite scroll buffer (desktop only)
   const cards = [...testimonials, ...testimonials, ...testimonials];
@@ -190,25 +189,29 @@ export function TestimonialSlider() {
     };
   }, []);
 
-  // Animate swipe arrows on mobile scroll direction
+  // Periodic swipe hint animation
+  const swipeIndicatorRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const el = mobileScrollRef.current;
-    if (!el) return;
+    const indicator = swipeIndicatorRef.current;
+    const leftArrow = leftArrowRef.current;
+    const rightArrow = rightArrowRef.current;
+    if (!indicator || !leftArrow || !rightArrow) return;
 
-    const onScroll = () => {
-      const currentLeft = el.scrollLeft;
-      const delta = currentLeft - lastScrollLeft.current;
-      lastScrollLeft.current = currentLeft;
+    const interval = setInterval(() => {
+      const tl = gsap.timeline();
+      // Darken the whole indicator
+      tl.to(indicator, { color: "rgba(0,0,0,0.9)", duration: 0.3, ease: "power2.out" });
+      // Left arrow shifts left
+      tl.to(leftArrow, { x: -6, duration: 0.25, ease: "power2.out" }, "<0.1");
+      tl.to(leftArrow, { x: 0, duration: 0.25, ease: "power2.in" });
+      // Right arrow shifts right
+      tl.to(rightArrow, { x: 6, duration: 0.25, ease: "power2.out" }, "<");
+      tl.to(rightArrow, { x: 0, duration: 0.25, ease: "power2.in" });
+      // Fade back to original
+      tl.to(indicator, { color: "rgba(0,0,0,0.3)", duration: 0.4, ease: "power2.inOut" });
+    }, 5000);
 
-      if (delta > 0 && rightArrowRef.current) {
-        gsap.fromTo(rightArrowRef.current, { x: 0 }, { x: 6, duration: 0.3, ease: "power2.out", yoyo: true, repeat: 1 });
-      } else if (delta < 0 && leftArrowRef.current) {
-        gsap.fromTo(leftArrowRef.current, { x: 0 }, { x: -6, duration: 0.3, ease: "power2.out", yoyo: true, repeat: 1 });
-      }
-    };
-
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
+    return () => clearInterval(interval);
   }, []);
 
   const desktopCardWidth = "calc(22.222vw - 2.5rem)";
@@ -255,7 +258,7 @@ export function TestimonialSlider() {
         <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-neutral-100/20 to-transparent pointer-events-none" />
 
         {/* Swipe indicator */}
-        <div className="flex items-center justify-center gap-3 pt-4 pb-2 text-black/30 text-xs tracking-[0.2em] uppercase">
+        <div ref={swipeIndicatorRef} className="flex items-center justify-center gap-3 pt-4 pb-2 text-black/30 text-xs tracking-[0.2em] uppercase">
           <span ref={leftArrowRef} className="inline-block will-change-transform">&larr;</span>
           <span>Swipe to view</span>
           <span ref={rightArrowRef} className="inline-block will-change-transform">&rarr;</span>

@@ -1,6 +1,29 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
+function useHongKongTime() {
+  const [time, setTime] = useState("");
+  useEffect(() => {
+    const update = () => {
+      setTime(
+        new Date().toLocaleTimeString("en-US", {
+          timeZone: "Asia/Hong_Kong",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+      );
+    };
+    update();
+    const id = setInterval(update, 60_000);
+    return () => clearInterval(id);
+  }, []);
+  return time;
+}
+
 export function ContactForm() {
+  const hkTime = useHongKongTime();
   return (
     <div className="h-full flex flex-col bg-[#000]">
       {/* Contact Info */}
@@ -30,7 +53,7 @@ export function ContactForm() {
       </div>
 
       {/* Form */}
-      <div className="bg-[#86DEAD] p-8 py-12 pb-40 sm:p-14 flex-1 flex flex-col gap-4">
+      <div className="bg-[#86DEAD] p-8 py-12 pb-32 sm:p-14 sm:pb-40 flex-1 flex flex-col gap-4">
         <input
           type="text"
           placeholder="Name"
@@ -57,6 +80,11 @@ export function ContactForm() {
         >
           Send Message
         </button>
+        {hkTime && (
+          <p className="text-black/40 text-xs tracking-wide text-center mt-4">
+            It&apos;s {hkTime} in Hong Kong
+          </p>
+        )}
       </div>
     </div>
   );
