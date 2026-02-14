@@ -3,6 +3,7 @@
 import { FC, useRef, useLayoutEffect, useState, useCallback } from "react";
 import { Content } from "@prismicio/client";
 import { SliceComponentProps, PrismicRichText } from "@prismicio/react";
+import { PiArrowBendRightUpFill, PiArrowBendRightDownFill } from "react-icons/pi";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -52,17 +53,20 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
       }
 
       // Mobile: "About" collapses from one word and expands before the other
+      // Uses scaleX instead of width to stay on the GPU compositor
       if (mobileAboutMeRef.current && mobileAboutAiRef.current) {
         const hiding = tab === "ai" ? mobileAboutMeRef.current : mobileAboutAiRef.current;
         const showing = tab === "ai" ? mobileAboutAiRef.current : mobileAboutMeRef.current;
 
         gsap.to(hiding, {
-          width: 0,
+          scaleX: 0,
+          transformOrigin: "right center",
           duration: 0.5,
           ease: "power3.inOut",
         });
         gsap.to(showing, {
-          width: "auto",
+          scaleX: 1,
+          transformOrigin: "left center",
           duration: 0.5,
           ease: "power3.inOut",
         });
@@ -135,7 +139,7 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
 
     // Mobile: collapse the Ai "About" so only "About Me / Ai" is visible
     if (mobileAboutAiRef.current) {
-      gsap.set(mobileAboutAiRef.current, { width: 0 });
+      gsap.set(mobileAboutAiRef.current, { scaleX: 0, transformOrigin: "left center" });
     }
 
     // Build paused timeline
@@ -209,13 +213,11 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
               </span>
               <button
                 onClick={() => switchTab("me")}
-                className="transition-colors duration-300"
-                style={{
-                  color:
-                    activeTab === "me"
-                      ? "#141414"
-                      : "rgba(20, 20, 20, 0.25)",
-                }}
+                className={`transition-colors duration-300 ${
+                  activeTab === "me"
+                    ? "text-[#141414]"
+                    : "text-[rgba(20,20,20,0.25)] hover:text-[rgba(20,20,20,0.35)]"
+                }`}
               >
                 Me
               </button>
@@ -228,13 +230,11 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
               </span>
               <button
                 onClick={() => switchTab("ai")}
-                className="transition-colors duration-300"
-                style={{
-                  color:
-                    activeTab === "ai"
-                      ? "#141414"
-                      : "rgba(20, 20, 20, 0.25)",
-                }}
+                className={`transition-colors duration-300 ${
+                  activeTab === "ai"
+                    ? "text-[#141414]"
+                    : "text-[rgba(20,20,20,0.25)] hover:text-[rgba(20,20,20,0.35)]"
+                }`}
               >
                 Ai
               </button>
@@ -250,7 +250,7 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
                 {/* Sliding "About" */}
                 <span
                   ref={aboutRef}
-                  className="absolute top-0 right-0"
+                  className="absolute top-0 right-0 will-change-transform"
                 >
                   About
                 </span>
@@ -260,25 +260,21 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
               <div className="flex flex-col gap-2 text-5xl font-serif font-semibold tracking-tight text-left">
                 <button
                   onClick={() => switchTab("me")}
-                  className="block text-left transition-colors duration-300"
-                  style={{
-                    color:
-                      activeTab === "me"
-                        ? "#141414"
-                        : "rgba(20, 20, 20, 0.25)",
-                  }}
+                  className={`block text-left transition-colors duration-300 ${
+                    activeTab === "me"
+                      ? "text-[#141414]"
+                      : "text-[rgba(20,20,20,0.25)] hover:text-[rgba(20,20,20,0.35)]"
+                  }`}
                 >
                   Me
                 </button>
                 <button
                   onClick={() => switchTab("ai")}
-                  className="block text-left transition-colors duration-300"
-                  style={{
-                    color:
-                      activeTab === "ai"
-                        ? "#141414"
-                        : "rgba(20, 20, 20, 0.25)",
-                  }}
+                  className={`block text-left transition-colors duration-300 ${
+                    activeTab === "ai"
+                      ? "text-[#141414]"
+                      : "text-[rgba(20,20,20,0.25)] hover:text-[rgba(20,20,20,0.35)]"
+                  }`}
                 >
                   Ai
                 </button>
@@ -291,15 +287,31 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
             <div className="grid *:col-start-1 *:row-start-1 overflow-hidden">
               <div
                 ref={meContentRef}
-                className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold"
+                className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold will-change-transform"
               >
                 <PrismicRichText field={slice.primary.about_me} />
+                <div className="flex justify-end mt-9">
+                  <button
+                    onClick={() => switchTab("ai")}
+                    className="group text-lg sm:text-xl font-bold text-black transition-opacity duration-300 hover:opacity-80"
+                  >
+                    What about Ai? <PiArrowBendRightUpFill className="inline-block -mt-4 text-2xl transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-0.5" />
+                  </button>
+                </div>
               </div>
               <div
                 ref={aiContentRef}
-                className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold"
+                className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold will-change-transform"
               >
                 <PrismicRichText field={slice.primary.about_ai} />
+                <div className="flex justify-end mt-9">
+                  <button
+                    onClick={() => switchTab("me")}
+                    className="group text-lg sm:text-xl font-bold text-black transition-opacity duration-300 hover:opacity-80"
+                  >
+                    More About Me <PiArrowBendRightDownFill className="inline-block mt-4 text-2xl transition-transform duration-300 group-hover:scale-125 group-hover:translate-y-0.5" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>

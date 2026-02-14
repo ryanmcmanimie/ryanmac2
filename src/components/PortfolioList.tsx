@@ -55,16 +55,19 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
         let closestIndex = 0;
         let closestDistance = Infinity;
 
-        items.forEach((item, index) => {
-          const rect = item.getBoundingClientRect();
+        // Break early once distance starts increasing (items are in DOM order)
+        for (let i = 0; i < items.length; i++) {
+          const rect = items[i].getBoundingClientRect();
           const itemCenter = rect.top + rect.height / 2;
           const distance = Math.abs(itemCenter - targetY);
 
           if (distance < closestDistance) {
             closestDistance = distance;
-            closestIndex = index;
+            closestIndex = i;
+          } else if (distance > closestDistance) {
+            break; // Past the closest — no need to measure remaining items
           }
-        });
+        }
 
         // Only update if changed
         if (closestIndex !== lastActiveRef.current) {
@@ -82,12 +85,14 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
         }
 
         // Move counter horizontally based on which item is centered
+        // Batch layout reads together, then write once at the end
         const counter = counterRef.current;
         if (items.length >= 2 && counter) {
-          const firstCenter = items[0].getBoundingClientRect().top + items[0].offsetHeight / 2;
-          const lastCenter = items[items.length - 1].getBoundingClientRect().top + items[items.length - 1].offsetHeight / 2;
+          const firstRect = items[0].getBoundingClientRect();
+          const lastRect = items[items.length - 1].getBoundingClientRect();
+          const firstCenter = firstRect.top + firstRect.height / 2;
+          const lastCenter = lastRect.top + lastRect.height / 2;
           const viewCenter = window.innerHeight / 2;
-          // Start moving when first item enters lower portion of viewport
           const startOffset = window.innerHeight * 0.3;
           const totalSpan = lastCenter - firstCenter;
           const progress = totalSpan !== 0

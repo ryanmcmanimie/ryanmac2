@@ -37,7 +37,9 @@ export function LenisProvider({ children }: LenisProviderProps) {
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    const lenis = new Lenis();
+    const lenis = new Lenis({
+      smoothTouch: false, // Let native mobile touch scrolling handle momentum
+    });
     lenisRef.current = lenis;
 
     lenis.on("scroll", ScrollTrigger.update);

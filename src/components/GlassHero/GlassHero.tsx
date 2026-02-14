@@ -94,7 +94,7 @@ export function GlassHero({
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -183,8 +183,12 @@ export function GlassHero({
     container.addEventListener("touchstart", handleTouchStart, { passive: true });
     container.addEventListener("touchmove", handleTouchMove, { passive: true });
 
+    let frameCount = 0;
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
+
+      // Throttle to ~30fps on mobile to reduce GPU load
+      if (isMobile && ++frameCount % 2 !== 0) return;
 
       mouse.x = lerp(mouse.x, targetMouse.x, config.lerpFactor);
       mouse.y = lerp(mouse.y, targetMouse.y, config.lerpFactor);

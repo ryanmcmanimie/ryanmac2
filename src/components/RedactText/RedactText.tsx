@@ -65,6 +65,7 @@ export function RedactText({
           block.className =
             "block-revealer absolute top-0 left-0 w-[101%] h-[101%] pointer-events-none z-10";
           block.style.backgroundColor = blockColor;
+          block.style.willChange = "transform";
           wrapper.appendChild(block);
 
           lines.current.push(line);
