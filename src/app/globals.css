@@ -9,6 +9,7 @@
   --font-condensed: var(--font-helvetica-cn), sans-serif;
   --font-serif: var(--font-instrument-serif), serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --color-green: #86DEAD;
 }
 
 :root {
@@ -21,6 +22,10 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+html {
+  zoom: 0.9;
 }
 
 body {

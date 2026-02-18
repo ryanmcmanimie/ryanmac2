@@ -178,8 +178,22 @@ export function GlassHero({
       );
     };
 
+    // Scroll-scrub on mobile: slightly shift the parallax as user scrolls
+    const handleScroll = () => {
+      if (!isMobile || !container) return;
+      const rect = container.getBoundingClientRect();
+      const sectionHeight = rect.height;
+      // Progress: 0 when hero top is at viewport top, 1 when hero is fully scrolled off
+      const progress = Math.max(0, Math.min(1, -rect.top / sectionHeight));
+      // Map scroll progress to a subtle horizontal shift (0.35 → 0.65)
+      targetMouse.x = 0.35 + progress * 0.3;
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("resize", handleResize);
+    if (isMobile) {
+      window.addEventListener("scroll", handleScroll, { passive: true });
+    }
     container.addEventListener("touchstart", handleTouchStart, { passive: true });
     container.addEventListener("touchmove", handleTouchMove, { passive: true });
 
@@ -202,6 +216,7 @@ export function GlassHero({
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleScroll);
       container.removeEventListener("touchstart", handleTouchStart);
       container.removeEventListener("touchmove", handleTouchMove);
       cancelAnimationFrame(frameRef.current);

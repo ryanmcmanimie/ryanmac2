@@ -19,12 +19,13 @@ async function PortfolioList({ slice }: PortfolioListProps) {
   const projects = projectDocs
     .map((doc) => ({
       name: asText(doc.data.title),
+      nickname: doc.data.nickname || null,
       subtitle: doc.data.subtitle ? asText(doc.data.subtitle) : null,
       muxPlaybackId: doc.data.teaser_video_mux_id,
       order: doc.data.order ? parseInt(doc.data.order, 10) : Infinity,
     }))
     .sort((a, b) => a.order - b.order)
-    .map(({ name, subtitle, muxPlaybackId }) => ({ name, subtitle, muxPlaybackId }));
+    .map(({ name, nickname, subtitle, muxPlaybackId }) => ({ name, nickname, subtitle, muxPlaybackId }));
 
   return (
     <div

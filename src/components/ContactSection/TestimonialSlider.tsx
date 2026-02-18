@@ -26,7 +26,7 @@ function TestimonialCard({
         unoptimized
       />
       <div
-        className="absolute inset-0 flex flex-col bg-linear-to-t from-black to-transparent"
+        className="absolute inset-0 flex flex-col bg-linear-to-t from-black via-black to-transparent opacity-80"
         style={{ clipPath }}
       >
         <div className="shrink-0" style={{ minHeight: spacerHeight }} />
@@ -103,9 +103,8 @@ export function TestimonialSlider() {
     const cardWidth = firstCard.offsetWidth;
     const computedGap = parseFloat(getComputedStyle(strip).gap) || 40;
 
-    const testimonialWidth = containerEl.offsetWidth * (2 / 3);
-    const step = testimonialWidth / 3;
-    const centerX = step;
+    const testimonialWidth = containerEl.offsetWidth * (3 / 5);
+    const centerX = testimonialWidth / 2;
 
     const targetX = centerX - activeIndex * (cardWidth + computedGap) - cardWidth / 2;
 
@@ -115,7 +114,7 @@ export function TestimonialSlider() {
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
         const isActive = i === activeIndex;
-        const baseHeight = card.offsetWidth * 2;
+        const baseHeight = Math.min(card.offsetWidth * 1.5, 500);
         gsap.set(card, {
           height: isActive ? baseHeight * 1.1 : baseHeight,
           opacity: isActive ? 1 : 0.3,
@@ -145,11 +144,11 @@ export function TestimonialSlider() {
       if (!card) return;
       gsap.killTweensOf(card);
       const isActive = i === activeIndex;
-      const baseHeight = card.offsetWidth * 2;
+      const baseHeight = Math.min(card.offsetWidth * 1.5, 500);
       gsap.to(card, {
         height: isActive ? baseHeight * 1.1 : baseHeight,
-        opacity: isActive ? 1 : 0.3,
-        filter: isActive ? "grayscale(0) blur(0px)" : "grayscale(1) blur(0.5px)",
+        opacity: isActive ? 1 : 0.2,
+        filter: isActive ? "grayscale(0) blur(0px)" : "grayscale(1) blur(1px)",
         duration: 0.6,
         ease: "power2.out",
       });
@@ -214,9 +213,9 @@ export function TestimonialSlider() {
     return () => clearInterval(interval);
   }, []);
 
-  const desktopCardWidth = "calc(22.222vw - 2.5rem)";
-  const desktopStripHeight = "calc((22.222vw - 2.5rem) * 2.2)";
-  const desktopContainerMinHeight = "calc((22.222vw - 2.5rem) * 2.2 + 2rem)";
+  const desktopCardWidth = "calc(32.329vw - 3.637rem)";
+  const desktopStripHeight = "min(calc((32.329vw - 3.637rem) * 1.7), 560px)";
+  const desktopContainerMinHeight = "min(calc((32.329vw - 3.637rem) * 1.7 + 2rem), 580px)";
 
   return (
     <div ref={containerRef} className="relative">
@@ -290,9 +289,9 @@ export function TestimonialSlider() {
                 className="shrink-0 relative overflow-hidden rounded-lg cursor-pointer"
                 style={{
                   width: desktopCardWidth,
-                  aspectRatio: "1 / 2",
-                  opacity: i === BASE_COUNT + 1 ? 1 : 0.3,
-                  filter: i === BASE_COUNT + 1 ? "grayscale(0) blur(0px)" : "grayscale(1) blur(0.5px)",
+                  aspectRatio: "1 / 1.5",
+                  opacity: i === BASE_COUNT + 1 ? 1 : 0.2,
+                  filter: i === BASE_COUNT + 1 ? "grayscale(0) blur(0px)" : "grayscale(1) blur(1px)",
                 }}
               >
                 <TestimonialCard
@@ -306,10 +305,10 @@ export function TestimonialSlider() {
         </div>
 
         {/* Navigation arrows */}
-        <div className="flex items-center justify-end gap-4 mb-8 mr-[calc(33.333%+2rem)]">
+        <div className="flex items-center justify-end gap-4 mb-8 mr-[calc(40%+2rem)]">
           <button
             onClick={goPrev}
-            className="w-12 h-12 rounded-full border border-black/40 flex items-center justify-center text-black hover:border-black transition-colors"
+            className="w-12 h-12 rounded-full border border-black/40 flex items-center justify-center text-black hover:border-black hover:scale-105 transition-all"
             aria-label="Previous testimonial"
           >
             <svg width="30" height="30" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -318,7 +317,7 @@ export function TestimonialSlider() {
           </button>
           <button
             onClick={goNext}
-            className="w-12 h-12 rounded-full border border-black/40 flex items-center justify-center text-black hover:border-black transition-colors"
+            className="w-12 h-12 rounded-full border border-black/40 flex items-center justify-center text-black hover:border-black hover:scale-105 transition-all"
             aria-label="Next testimonial"
           >
             <svg width="30" height="30" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">

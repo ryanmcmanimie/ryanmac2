@@ -478,6 +478,17 @@ interface ProjectDocumentData {
   order: prismic.KeyTextField;
 
   /**
+   * Nickname field in *Project*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: project.nickname
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  nickname: prismic.KeyTextField;
+
+  /**
    * Slice Zone field in *Project*
    *
    * - **Field Type**: Slice Zone
@@ -752,6 +763,61 @@ export type AllDocumentTypes =
   | ServiceDocument
   | ServicesDocument
   | SettingsDocument;
+
+/**
+ * Primary content in *AboutDuo → Default → Primary*
+ */
+export interface AboutDuoSliceDefaultPrimary {
+  /**
+   * About Me field in *AboutDuo → Default → Primary*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: Enter About Me content
+   * - **API ID Path**: about_duo.default.primary.about_me
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  about_me: prismic.RichTextField;
+
+  /**
+   * About Ai field in *AboutDuo → Default → Primary*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: Enter About Ai content
+   * - **API ID Path**: about_duo.default.primary.about_ai
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  about_ai: prismic.RichTextField;
+}
+
+/**
+ * Default variation for AboutDuo Slice
+ *
+ * - **API ID**: `default`
+ * - **Description**: Default variation
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type AboutDuoSliceDefault = prismic.SharedSliceVariation<
+  "default",
+  Simplify<AboutDuoSliceDefaultPrimary>,
+  never
+>;
+
+/**
+ * Slice variation for *AboutDuo*
+ */
+type AboutDuoSliceVariation = AboutDuoSliceDefault;
+
+/**
+ * AboutDuo Shared Slice
+ *
+ * - **API ID**: `about_duo`
+ * - **Description**: About Me / Ai section with animated tab switching
+ * - **Documentation**: https://prismic.io/docs/slices
+ */
+export type AboutDuoSlice = prismic.SharedSlice<
+  "about_duo",
+  AboutDuoSliceVariation
+>;
 
 /**
  * Primary content in *GlassHero → Default → Primary*
@@ -1043,61 +1109,6 @@ export type SplitCardsSlice = prismic.SharedSlice<
   SplitCardsSliceVariation
 >;
 
-/**
- * Primary content in *AboutDuo → Default → Primary*
- */
-export interface AboutDuoSliceDefaultPrimary {
-  /**
-   * About Me field in *AboutDuo → Default → Primary*
-   *
-   * - **Field Type**: Rich Text
-   * - **Placeholder**: Enter About Me content
-   * - **API ID Path**: about_duo.default.primary.about_me
-   * - **Documentation**: https://prismic.io/docs/fields/rich-text
-   */
-  about_me: prismic.RichTextField;
-
-  /**
-   * About Ai field in *AboutDuo → Default → Primary*
-   *
-   * - **Field Type**: Rich Text
-   * - **Placeholder**: Enter About Ai content
-   * - **API ID Path**: about_duo.default.primary.about_ai
-   * - **Documentation**: https://prismic.io/docs/fields/rich-text
-   */
-  about_ai: prismic.RichTextField;
-}
-
-/**
- * Default variation for AboutDuo Slice
- *
- * - **API ID**: `default`
- * - **Description**: Default variation
- * - **Documentation**: https://prismic.io/docs/slices
- */
-export type AboutDuoSliceDefault = prismic.SharedSliceVariation<
-  "default",
-  Simplify<AboutDuoSliceDefaultPrimary>,
-  never
->;
-
-/**
- * Slice variation for *AboutDuo*
- */
-type AboutDuoSliceVariation = AboutDuoSliceDefault;
-
-/**
- * AboutDuo Shared Slice
- *
- * - **API ID**: `about_duo`
- * - **Description**: About Me / Ai section with animated tab switching
- * - **Documentation**: https://prismic.io/docs/slices
- */
-export type AboutDuoSlice = prismic.SharedSlice<
-  "about_duo",
-  AboutDuoSliceVariation
->;
-
 declare module "@prismicio/client" {
   interface CreateClient {
     (
@@ -1146,6 +1157,10 @@ declare module "@prismicio/client" {
       SettingsDocument,
       SettingsDocumentData,
       AllDocumentTypes,
+      AboutDuoSlice,
+      AboutDuoSliceDefaultPrimary,
+      AboutDuoSliceVariation,
+      AboutDuoSliceDefault,
       GlassHeroSlice,
       GlassHeroSliceDefaultPrimary,
       GlassHeroSliceVariation,
@@ -1161,14 +1176,10 @@ declare module "@prismicio/client" {
       SimpleHeroSliceVariation,
       SimpleHeroSliceDefault,
       SplitCardsSlice,
-      SplitCardsSliceDefaultPrimary,
       SplitCardsSliceDefaultPrimaryCardsItem,
+      SplitCardsSliceDefaultPrimary,
       SplitCardsSliceVariation,
       SplitCardsSliceDefault,
-      AboutDuoSlice,
-      AboutDuoSliceDefaultPrimary,
-      AboutDuoSliceVariation,
-      AboutDuoSliceDefault,
     };
   }
 }

@@ -98,6 +98,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
   const menuOverlayContentRef = useRef<HTMLDivElement>(null);
   const menuMediaWrapperRef = useRef<HTMLDivElement>(null);
   const menuToggleLabelRef = useRef<HTMLParagraphElement>(null);
+  const menuToggleRef = useRef<HTMLDivElement>(null);
   const menuColsRef = useRef<HTMLDivElement[]>([]);
   const splitTextRef = useRef<{ container: HTMLDivElement; splits: SplitText[] }[]>([]);
 
@@ -105,6 +106,19 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
   useEffect(() => {
     isOpenRef.current = isOpen;
   }, [isOpen]);
+
+  // Fade hamburger toggle in on mount to prevent partial render flash
+  // Initial opacity: 0 is set via inline style on the element
+  useEffect(() => {
+    if (menuToggleRef.current) {
+      gsap.to(menuToggleRef.current, {
+        opacity: 1,
+        duration: 0.4,
+        ease: "power2.out",
+        delay: 0.3,
+      });
+    }
+  }, []);
 
   // Detect when nav is over light sections
   useEffect(() => {
@@ -422,15 +436,18 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
 
           {/* Toggle Button */}
           <div
-            className={`-mt-3 flex items-center gap-4 cursor-pointer transition-all duration-300 ${rightOverLight && !isOpen ? "**:text-black! [&_.hamburger-wrapper]:border-black! [&_.hamburger-wrapper]:text-black!" : ""}`}
+            ref={menuToggleRef}
+            style={{ opacity: 0 }}
+            className={`group/toggle -mt-3 flex items-center gap-3 cursor-pointer transition-all duration-300 ${rightOverLight && !isOpen ? "**:text-black! [&_.hamburger-wrapper]:border-black! [&_.hamburger-wrapper]:text-black!" : ""}`}
             onClick={toggle}
           >
-            <div className="overflow-hidden max-sm:hidden">
+            <div className="overflow-hidden max-sm:hidden h-5">
               <p
                 ref={menuToggleLabelRef}
                 className="text-sm tracking-wider font-bold will-change-transform text-white uppercase"
               >
-                Menu
+                <span className="block transition-transform duration-300 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover/toggle:-translate-y-full">Menu</span>
+                <span className="block transition-transform duration-300 ease-[cubic-bezier(0.87,0,0.13,1)] group-hover/toggle:-translate-y-full">Do It</span>
               </p>
             </div>
             <div className="hamburger-wrapper relative max-sm:w-[28px] max-sm:h-[28px] sm:w-[70px] sm:h-[70px] flex justify-center items-center sm:border-none sm:border-white rounded-lg text-white pointer-events-none">
@@ -467,7 +484,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
             {/* Content */}
             <div className="flex-3 relative flex">
               {/* Main Links */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 max-md:w-full p-8 flex max-md:flex-col items-end max-md:items-start gap-8 max-md:gap-20">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 max-md:w-full p-4 sm:p-8 flex max-md:flex-col items-end max-md:items-start gap-8 max-md:gap-20">
                 <div
                   ref={(el) => addMenuColRef(el, 0)}
                   className="flex-3 flex flex-col gap-2"
@@ -514,7 +531,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
               </div>
 
               {/* Footer */}
-              <div className="absolute bottom-0 left-0 right-0 mx-auto w-3/4 max-md:w-full p-8 flex items-end gap-8">
+              <div className="absolute bottom-0 left-0 right-0 mx-auto w-3/4 max-md:w-full p-4 sm:p-8 flex items-end gap-8">
                 <div
                   ref={(el) => addMenuColRef(el, 2)}
                   className="flex-[3] flex flex-col gap-2"

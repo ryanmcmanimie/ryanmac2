@@ -129,9 +129,13 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
     }
 
     // Position Ai content off-screen (below on desktop, right on mobile)
+    // opacity: 1 restores from the inline style={{ opacity: 0 }} that prevents the flash
     if (aiContentRef.current) {
       const isMobile = window.matchMedia("(max-width: 767px)").matches;
-      gsap.set(aiContentRef.current, isMobile ? { xPercent: 100 } : { yPercent: 100 });
+      gsap.set(aiContentRef.current, {
+        ...(isMobile ? { xPercent: 100 } : { yPercent: 100 }),
+        opacity: 1,
+      });
     }
 
     // Mobile: collapse the Ai "About" so only "About Me / Ai" is visible
@@ -201,7 +205,7 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
           {/* Mobile title — single row: About Me / Ai */}
           <div ref={titleRef} className="col-span-1 p-6 md:p-12 md:pt-6">
             {/* Mobile: inline row — "About" travels between Me and Ai */}
-            <div className="flex items-baseline text-5xl font-semibold font-serif tracking-tight md:hidden">
+            <div className="flex items-baseline text-4xl sm:text-5xl font-semibold font-serif tracking-tight md:hidden">
               <span
                 ref={mobileAboutMeRef}
                 className="inline-block overflow-hidden whitespace-nowrap"
@@ -281,7 +285,7 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
 
           {/* Right column — content carousel */}
           <div ref={contentRef} className="col-span-1 md:col-span-2 p-6 md:p-12 md:pt-6">
-            <div className="grid *:col-start-1 *:row-start-1 overflow-hidden">
+            <div className="grid *:col-start-1 *:row-start-1 overflow-hidden pb-2">
               <div
                 ref={meContentRef}
                 className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold will-change-transform"
@@ -299,6 +303,7 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
               </div>
               <div
                 ref={aiContentRef}
+                style={{ opacity: 0 }}
                 className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold will-change-transform"
               >
                 <PrismicRichText field={slice.primary.about_ai} />

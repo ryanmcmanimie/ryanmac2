@@ -12,11 +12,11 @@ export function Footer() {
             height={56}
             className="w-[194px] h-auto sm:w-[277px]"
           />
-          <p className="font-light tracking-wide text-neutral-400 sm:-ml-1">
+          <p className="font-light tracking-wide text-neutral-400 sm:-ml-1 text-sm">
             &copy; twenty thousand twenty five
           </p>
         </div>
-        <div className="flex items-center gap-2 font-light tracking-wide text-neutral-400 py-6 sm:py-0">
+        <div className="flex items-center gap-2 font-light tracking-wide text-neutral-400 py-6 sm:py-0 text-sm">
           <a href="/terms" className="hover:text-white transition-colors">
             terms
           </a>

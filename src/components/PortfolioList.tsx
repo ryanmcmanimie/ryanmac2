@@ -3,16 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import MuxPlayer from "@mux/mux-player-react";
 import type MuxPlayerElement from "@mux/mux-player";
 import { RedactText } from "./RedactText";
 
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 }
 
 interface Project {
   name: string;
+  nickname: string | null;
   subtitle: string | null;
   muxPlaybackId: string | null;
 }
@@ -34,6 +36,9 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
   const lastActiveRef = useRef(0);
   const lastScrollY = useRef(0);
   const counterRef = useRef<HTMLHeadingElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [showTopGradient, setShowTopGradient] = useState(false);
+  const [showBottomGradient, setShowBottomGradient] = useState(true);
 
   useEffect(() => {
     let rafId: number | null = null;
@@ -73,6 +78,8 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
         if (closestIndex !== lastActiveRef.current) {
           lastActiveRef.current = closestIndex;
           setCurrentIndex(closestIndex + 1);
+          setShowTopGradient(closestIndex > 0);
+          setShowBottomGradient(closestIndex < items.length - 1);
 
           // Pause all videos except the active one
           playerRefs.current.forEach((player, index) => {
@@ -119,14 +126,17 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
   }, []);
 
   return (
-    <section className="bg-[#141414] text-white font-sans min-h-screen relative">
+    <section ref={sectionRef} className="bg-[#141414] text-white font-sans min-h-screen relative">
 
-      <h2 className="text-white uppercase tracking-tighter absolute font-medium top-0 right-6 text-[4rem] z-10 my-6 sm:mt-2 font-serif">Projects</h2>
+      {/* Top fade gradient - appears once first item scrolls off */}
+      <div className={`sticky top-0 left-0 right-0 h-48 bg-linear-to-b from-[#141414] via-[#141414]/60 to-transparent z-20 pointer-events-none transition-opacity duration-500 ${showTopGradient ? "opacity-100" : "opacity-0"}`} />
+
+      <h2 className="text-white uppercase tracking-tighter absolute font-medium top-0 right-6 text-[4rem] z-30 my-6 sm:mt-2 font-serif">Projects</h2>
 
       {/* Portfolio Section - contains sticky header and items */}
       <div className="relative">
         {/* Portfolio Items */}
-        <div className="px-6 py-44 sm:py-24 flex flex-col gap-12">
+        <div className="px-6 py-0 sm:py-24 flex flex-col gap-18">
           {projects.map((project, index) => {
             const isActive = currentIndex === index + 1;
             return (
@@ -171,9 +181,12 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
           })}
         </div>
 
+        {/* Bottom fade gradient - hidden once last item is active */}
+        <div className={`sticky bottom-12 left-0 right-0 h-48 bg-linear-to-t from-[#141414] via-[#141414]/60 to-transparent z-20 pointer-events-none transition-opacity duration-500 ${showBottomGradient ? "opacity-100" : "opacity-0"}`} />
+
         {/* Sticky Counter Footer - sticks to bottom when scrolling through section */}
-        <div className="sticky bottom-0 z-40 text-[#141414] bg-white px-6 py-4">
-          <h2 ref={counterRef} className="text-5xl font-serif font-bold leading-none inline-block will-change-transform">
+        <div className="sticky bottom-0 z-40 text-[#141414] bg-white/90 px-4 py-3">
+          <h2 ref={counterRef} className="text-4xl font-serif font-bold leading-none inline-block will-change-transform">
             {String(currentIndex).padStart(2, "0")}
             <span className="text-2xl ml-1 font-normal">/{String(projects.length).padStart(2, "0")}</span>
           </h2>
@@ -193,6 +206,55 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
   const projectNameRefs = useRef<(HTMLDivElement | null)[]>([]);
   const projectSubtitleRefs = useRef<(HTMLParagraphElement | null)[]>([]);
   const playerRefs = useRef<(MuxPlayerElement | null)[]>([]);
+  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const activeIndexRef = useRef(0);
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+
+  const hoveredVideoRef = useRef<number | null>(null);
+
+  const handleVideoMouseMove = (e: React.MouseEvent, index: number) => {
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+    gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.15, ease: "power2.out" });
+    // Show/hide based on whether hovered video is active
+    const isActive = index === activeIndexRef.current;
+    gsap.to(cursor, { scale: isActive ? 1 : 0, opacity: isActive ? 1 : 0, duration: 0.2, overwrite: "auto" });
+  };
+
+  const handleVideoMouseEnter = (index: number) => {
+    hoveredVideoRef.current = index;
+    const cursor = cursorRef.current;
+    if (cursor && index === activeIndexRef.current) {
+      gsap.to(cursor, { scale: 1, opacity: 1, duration: 0.3 });
+    }
+  };
+
+  const handleVideoMouseLeave = () => {
+    hoveredVideoRef.current = null;
+    const cursor = cursorRef.current;
+    if (cursor) gsap.to(cursor, { scale: 0, opacity: 0, duration: 0.3 });
+  };
+
+  const handleVideoMouseDown = (index: number) => {
+    if (index !== activeIndexRef.current) return;
+    const inner = cursorRef.current?.querySelector("[data-cursor-inner]") as HTMLElement | null;
+    if (inner) gsap.to(inner, { x: 2, y: 2, boxShadow: "0px 0px 0px rgba(0,0,0,0.5)", duration: 0.1 });
+  };
+
+  const handleVideoMouseUp = (index: number) => {
+    if (index !== activeIndexRef.current) return;
+    const inner = cursorRef.current?.querySelector("[data-cursor-inner]") as HTMLElement | null;
+    if (inner) gsap.to(inner, { x: 0, y: 0, boxShadow: "2px 2px 0px rgba(0,0,0,0.5)", duration: 0.1 });
+  };
+
+  const scrollToProject = (index: number) => {
+    const st = scrollTriggerRef.current;
+    if (!st) return;
+    const targetProgress = (index + 0.5) / projects.length;
+    const targetScroll = st.start + targetProgress * (st.end - st.start);
+    gsap.to(window, { scrollTo: targetScroll, duration: 0.8, ease: "power2.inOut" });
+  };
 
   useEffect(() => {
     const spotlightSection = spotlightRef.current;
@@ -224,7 +286,7 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
     const imgActivationThreshold = window.innerHeight / 1.95;
     const navHeight = 112; // 7rem = 112px
 
-    const scrollTriggerInstance = ScrollTrigger.create({
+    const scrollTriggerInstance = scrollTriggerRef.current = ScrollTrigger.create({
       trigger: spotlightSection,
       start: `top top+=${navHeight}`,
       end: `+=${window.innerHeight * 5}px`,
@@ -242,6 +304,17 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
         projectIndex.innerHTML = `${String(currentIdx).padStart(2, "0")}<span>/&nbsp;${String(
           totalProjectCount
         ).padStart(2, "0")}</span>`;
+
+        if (currentIdx - 1 !== activeIndexRef.current) {
+          activeIndexRef.current = currentIdx - 1;
+          setActiveProjectIndex(currentIdx - 1);
+          // Hide cursor if hovered video is no longer active
+          const hovered = hoveredVideoRef.current;
+          if (hovered !== null && hovered !== currentIdx - 1) {
+            const cursor = cursorRef.current;
+            if (cursor) gsap.to(cursor, { scale: 0, opacity: 0, duration: 0.2 });
+          }
+        }
 
         gsap.set(projectIndex, {
           y: progress * moveDistanceIndex,
@@ -280,8 +353,10 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
 
           if (projectProgress > 0 && projectProgress < 1) {
             gsap.set(p, { color: "#fff" });
+            p.dataset.active = "true";
           } else {
             gsap.set(p, { color: "#4a4a4a" });
+            p.dataset.active = "false";
           }
 
           // Subtitle slide - delayed in, early out
@@ -312,19 +387,22 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
       />
 
      
-      <h2 className="text-white uppercase tracking-tighter absolute font-medium top-0 right-8 text-[6rem] z-10 mt-2 font-serif">Projects</h2>
+      <div className="absolute top-0 right-8 z-10 mt-8   text-right">
+        <h2 className="text-white uppercase tracking-tighter font-medium text-[6rem] font-serif leading-none">Projects</h2>
+        <div className="text-white text-sm">More En Route</div>
+      </div>
      
 
       {/* Spotlight Section - height accounts for nav */}
       <div
         ref={spotlightRef}
-        className="relative w-full h-[calc(100svh-112px)] p-8"
+        className="relative w-full h-[calc(100svh-112px)] p-8 pointer-events-none"
       >
         {/* Project Index */}
         <div className="project-index">
           <h1
             ref={projectIndexRef}
-            className="uppercase font-serif text-[8rem] font-extralight leading-none tracking-tight will-change-transform"
+            className="uppercase font-serif text-[6rem] font-extralight leading-none tracking-tight will-change-transform"
           >
             01<span>/{String(projects.length).padStart(2, "0")}</span>
           </h1>
@@ -333,13 +411,18 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
         {/* Project Images */}
         <div
           ref={projectImagesRef}
-          className="absolute -top-28 left-1/2 -translate-x-1/2 w-[45%] py-[50svh] flex flex-col gap-6 -z-10 will-change-transform rounded-md"
+          className="absolute -top-28 left-1/2 -translate-x-1/2 w-[45%] py-[50svh] flex flex-col gap-6 -z-10 will-change-transform rounded-md pointer-events-auto"
         >
           {projects.map((project, index) => (
             <div
               key={index}
               ref={(el) => { projectImgRefs.current[index] = el; }}
-              className="w-full aspect-video brightness-[0.1] transition-all duration-300 overflow-hidden rounded-md"
+              className="group/vid relative w-full aspect-video brightness-[0.1] transition-all duration-300 overflow-hidden rounded-md cursor-none"
+              onMouseMove={(e) => handleVideoMouseMove(e, index)}
+              onMouseEnter={() => handleVideoMouseEnter(index)}
+              onMouseLeave={handleVideoMouseLeave}
+              onMouseDown={() => handleVideoMouseDown(index)}
+              onMouseUp={() => handleVideoMouseUp(index)}
             >
               {project.muxPlaybackId ? (
                 <MuxPlayer
@@ -348,12 +431,13 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
                   muted
                   loop
                   playsInline
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover pointer-events-none"
                   style={{ "--controls": "none" }}
                 />
               ) : (
                 <div className="w-full h-full bg-gray-800" />
               )}
+              <div className="absolute inset-0 bg-black/0 opacity-0 group-hover/vid:opacity-100 transition-opacity duration-300 rounded-md" />
             </div>
           ))}
         </div>
@@ -361,13 +445,14 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
         {/* Project Names */}
         <div
           ref={projectNamesRef}
-          className="absolute right-8 bottom-8 flex flex-col items-end"
+          className="absolute right-8 bottom-8 flex flex-col items-end pointer-events-auto"
         >
           {projects.map((project, index) => (
             <div
               key={index}
               ref={(el) => { projectNameRefs.current[index] = el; }}
-              className="relative text-right text-[#4a4a4a] transition-colors duration-300 will-change-transform"
+              className="relative text-right text-[#4a4a4a] transition-[color,filter] duration-300 will-change-transform cursor-pointer data-[active=false]:hover:brightness-[1.25]"
+              onClick={() => scrollToProject(index)}
             >
               <h3 className="text-4xl font-serif font-bold leading-tight">
                 {project.name}
@@ -384,6 +469,17 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
               )}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Custom Cursor */}
+      <div
+        ref={cursorRef}
+        className="fixed top-0 left-0 z-50 pointer-events-none scale-0 opacity-0 -translate-x-1/2 -translate-y-1/2 will-change-transform"
+      >
+        <div className="w-[84px] h-[84px] rounded-full bg-green-200/95 backdrop-blur-sm flex flex-col items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-all duration-100" data-cursor-inner>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-black leading-none -mr-[0.1em]">Open</span>
+          <span className="text-[10px] font-normal uppercase tracking-wider text-black leading-none mt-0.5 ">{projects[activeProjectIndex]?.nickname || projects[activeProjectIndex]?.name}</span>
         </div>
       </div>
 
