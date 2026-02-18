@@ -37,11 +37,28 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
   const lastScrollY = useRef(0);
   const counterRef = useRef<HTMLHeadingElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const stableHeightRef = useRef(0);
   const [showTopGradient, setShowTopGradient] = useState(false);
   const [showBottomGradient, setShowBottomGradient] = useState(true);
 
   useEffect(() => {
+    // Capture a stable viewport height that won't shift with address bar
+    // CSS svh (small viewport height) = viewport with address bar visible
+    const measure = document.createElement("div");
+    measure.style.cssText = "position:fixed;top:0;height:100svh;pointer-events:none;visibility:hidden;";
+    document.body.appendChild(measure);
+    stableHeightRef.current = measure.offsetHeight;
+    document.body.removeChild(measure);
+
     let rafId: number | null = null;
+
+    const onResize = () => {
+      const m = document.createElement("div");
+      m.style.cssText = "position:fixed;top:0;height:100svh;pointer-events:none;visibility:hidden;";
+      document.body.appendChild(m);
+      stableHeightRef.current = m.offsetHeight;
+      document.body.removeChild(m);
+    };
 
     const updateActiveItem = () => {
       if (rafId) return;
@@ -55,8 +72,9 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
         const scrollingUp = window.scrollY < lastScrollY.current;
         lastScrollY.current = window.scrollY;
 
-        // Target point: 40% from top so later items activate before reaching dead center
-        const targetY = window.innerHeight * (scrollingUp ? 0.45 : 0.4);
+        // Use stable height (CSS svh) so address bar show/hide doesn't shift the target
+        const vh = stableHeightRef.current || window.innerHeight;
+        const targetY = vh * (scrollingUp ? 0.45 : 0.4);
         let closestIndex = 0;
         let closestDistance = Infinity;
 
@@ -117,10 +135,12 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
     };
 
     window.addEventListener("scroll", updateActiveItem, { passive: true });
+    window.addEventListener("resize", onResize);
     updateActiveItem(); // Initial check
 
     return () => {
       window.removeEventListener("scroll", updateActiveItem);
+      window.removeEventListener("resize", onResize);
       if (rafId) cancelAnimationFrame(rafId);
     };
   }, []);
