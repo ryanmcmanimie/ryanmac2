@@ -188,7 +188,7 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
                   )}
                 </div>
                 <div className={`transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-30"}`}>
-                  <h2 className="text-3xl font-bold font-serif tracking-wide">
+                  <h2 className="text-2xl font-black font-serif tracking-wide">
                     {project.name}
                   </h2>
                   {project.subtitle && (

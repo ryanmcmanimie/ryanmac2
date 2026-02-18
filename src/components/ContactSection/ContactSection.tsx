@@ -6,7 +6,7 @@ import { AngledDivider } from "./AngledDivider";
 
 export function ContactSection() {
   return (
-    <section className="relative w-full bg-neutral-100 overflow-hidden h-[860px]">
+    <section className="relative w-full bg-neutral-100 overflow-hidden lg:h-[860px]">
       {/* Mobile: stacked layout */}
       <div className="flex flex-col lg:hidden">
         <div data-nav-theme="light" className="py-14 sm:py-20">
