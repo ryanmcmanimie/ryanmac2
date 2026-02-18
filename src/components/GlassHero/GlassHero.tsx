@@ -185,8 +185,8 @@ export function GlassHero({
       const sectionHeight = rect.height;
       // Progress: 0 when hero top is at viewport top, 1 when hero is fully scrolled off
       const progress = Math.max(0, Math.min(1, -rect.top / sectionHeight));
-      // Map scroll progress to a subtle horizontal shift (0.35 → 0.65)
-      targetMouse.x = 0.35 + progress * 0.3;
+      // Map scroll progress to a horizontal shift (0.15 → 0.85)
+      targetMouse.x = 0.15 + progress * 2;
     };
 
     window.addEventListener("mousemove", handleMouseMove);
