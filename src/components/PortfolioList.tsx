@@ -55,8 +55,8 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
         const scrollingUp = window.scrollY < lastScrollY.current;
         lastScrollY.current = window.scrollY;
 
-        // Scrolling down: 50% (switch sooner), Scrolling up: -10% (stay active much longer)
-        const targetY = window.innerHeight * (scrollingUp ? 0.5 : 0.5);
+        // Target point: 40% from top so later items activate before reaching dead center
+        const targetY = window.innerHeight * (scrollingUp ? 0.45 : 0.4);
         let closestIndex = 0;
         let closestDistance = Infinity;
 
@@ -167,7 +167,7 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
                   )}
                 </div>
                 <div className={`transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-30"}`}>
-                  <h2 className="text-2xl font-semibold font-serif tracking-wide">
+                  <h2 className="text-2xl font-bold font-serif tracking-wide">
                     {project.name}
                   </h2>
                   {project.subtitle && (
