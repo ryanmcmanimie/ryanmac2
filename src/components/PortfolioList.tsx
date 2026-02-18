@@ -81,7 +81,8 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
         // Break early once distance starts increasing (items are in DOM order)
         for (let i = 0; i < items.length; i++) {
           const rect = items[i].getBoundingClientRect();
-          const itemCenter = rect.top + rect.height / 2;
+          // Use a point ~1/3 from top (center of video area) instead of card center
+          const itemCenter = rect.top + rect.height * 0.33;
           const distance = Math.abs(itemCenter - targetY);
 
           if (distance < closestDistance) {
@@ -187,7 +188,7 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
                   )}
                 </div>
                 <div className={`transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-30"}`}>
-                  <h2 className="text-2xl font-bold font-serif tracking-wide">
+                  <h2 className="text-3xl font-bold font-serif tracking-wide">
                     {project.name}
                   </h2>
                   {project.subtitle && (
