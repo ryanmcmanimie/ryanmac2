@@ -1,0 +1,69 @@
+{
+  "format": "custom",
+  "id": "review",
+  "label": "Review",
+  "repeatable": true,
+  "status": true,
+  "json": {
+    "Main": {
+      "uid": {
+        "type": "UID",
+        "config": {
+          "label": "UID"
+        }
+      },
+      "name": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Name",
+          "placeholder": "",
+          "allowTargetBlank": false,
+          "single": "strong"
+        }
+      },
+      "position": {
+        "type": "Text",
+        "config": {
+          "label": "Position",
+          "placeholder": ""
+        }
+      },
+      "Company": {
+        "type": "Text",
+        "config": {
+          "label": "Company",
+          "placeholder": ""
+        }
+      },
+      "testimonial": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Testimonial",
+          "placeholder": "",
+          "allowTargetBlank": false,
+          "single": "strong,em,hyperlink"
+        }
+      },
+      "short_testimonial": {
+        "type": "StructuredText",
+        "config": {
+          "label": "Short Testimonial",
+          "placeholder": "",
+          "allowTargetBlank": false,
+          "single": "strong"
+        }
+      },
+      "image": {
+        "type": "Image",
+        "config": {
+          "label": "Image",
+          "constraint": {
+            "width": 800,
+            "height": 1400
+          },
+          "thumbnails": []
+        }
+      }
+    }
+  }
+}

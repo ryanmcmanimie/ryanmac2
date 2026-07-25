@@ -270,7 +270,7 @@ export function GlassHero({
         <h1 className="font-light font-serif w-3/5 max-md:w-full text-white text-8xl max-md:text-6xl tracking-tight leading-none">
           {headline}
         </h1>
-        {tagline && <p className="text-white text-sm font-medium">{tagline}</p>}
+        {tagline && <p className="text-white font-medium">{tagline}</p>}
       </div>
     </section>
   );

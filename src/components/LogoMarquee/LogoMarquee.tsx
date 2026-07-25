@@ -69,7 +69,7 @@ export function LogoMarquee({ height = 200 }: LogoMarqueeProps) {
   return (
     <div
       ref={containerRef}
-      className="logo-marquee relative overflow-hidden bg-black/20 backdrop-blur-sm border-b-4 sm:border-b-8 border-neutral-100"
+      className="logo-marquee relative overflow-hidden bg-black/20 backdrop-blur-sm"
       style={{
         ["--desktop-height" as string]: `${height}px`,
         ["--mobile-height" as string]: `${mobileHeight}px`,
@@ -81,7 +81,7 @@ export function LogoMarquee({ height = 200 }: LogoMarqueeProps) {
 
       {/* Right fade gradient */}
       <div
-        className="absolute top-0 bottom-0 bg-linear-to-l from-black/70 from-30% to-transparent z-10 pointer-events-none"
+        className="absolute top-0 bottom-[7px] bg-linear-to-l from-black/70 from-30% to-transparent z-10 pointer-events-none"
         style={{ right: "0", width: "25%" }}
       />
 
@@ -110,6 +110,15 @@ export function LogoMarquee({ height = 200 }: LogoMarqueeProps) {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Bottom border with noise texture */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 sm:h-2 bg-neutral-100">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ backgroundImage: "url(/bg-noise.webp)", backgroundRepeat: "repeat", backgroundSize: "200px", opacity: 0.06 }}
+          aria-hidden="true"
+        />
       </div>
     </div>
   );

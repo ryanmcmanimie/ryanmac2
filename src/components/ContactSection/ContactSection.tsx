@@ -1,10 +1,34 @@
 "use client";
 
+import type { Content } from "@prismicio/client";
+import { asText, isFilled } from "@prismicio/client";
 import { TestimonialSlider } from "./TestimonialSlider";
 import { ContactForm } from "./ContactForm";
 import { AngledDivider } from "./AngledDivider";
+import type { Testimonial } from "./testimonialData";
+import { testimonials as fallbackTestimonials } from "./testimonialData";
 
-export function ContactSection() {
+const FALLBACK_PORTRAIT = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=667&fit=crop&crop=top,faces";
+
+function mapReviewsToTestimonials(reviews: Content.ReviewDocument[]): Testimonial[] {
+  return reviews.map((review, i) => ({
+    id: i + 1,
+    name: asText(review.data.name) || "Anonymous",
+    position: review.data.position || "",
+    company: review.data.Company || "",
+    quote: asText(review.data.testimonial) || "",
+    quoteRichText: review.data.testimonial,
+    quoteShortRichText: review.data.short_testimonial,
+    portrait: isFilled.image(review.data.image) ? review.data.image.url : FALLBACK_PORTRAIT,
+  }));
+}
+
+interface ContactSectionProps {
+  reviews: Content.ReviewDocument[];
+}
+
+export function ContactSection({ reviews }: ContactSectionProps) {
+  const testimonials = reviews.length > 0 ? mapReviewsToTestimonials(reviews) : fallbackTestimonials;
   return (
     <section className="relative w-full bg-neutral-100 overflow-hidden lg:h-[860px]">
       {/* Mobile: stacked layout */}
@@ -18,15 +42,15 @@ export function ContactSection() {
               It's trite but I genuinely strive to build business relationships that last well beyond the initial deliverable.
             </p>
           </div>
-          <TestimonialSlider />
+          <TestimonialSlider testimonials={testimonials} />
         </div>
         <ContactForm />
       </div>
 
       {/* Desktop: overlay layout */}
       <div className="hidden lg:block">
-        <div data-nav-theme-left="light" className="relative z-0 py-20">
-          <TestimonialSlider />
+        <div data-nav-theme-left="light" className="relative z-0 pt-16">
+          <TestimonialSlider testimonials={testimonials} />
         </div>
         <div className="absolute top-0 right-0 bottom-0 w-2/5 z-[5] shadow-[-8px_0_24px_rgba(0,0,0,0.15)]">
           <ContactForm />

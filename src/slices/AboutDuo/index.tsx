@@ -193,9 +193,14 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
       data-slice-type={slice.slice_type}
       data-slice-variation={slice.variation}
       data-nav-theme="light"
-      className="bg-neutral-100 text-[#141414] md:max-h-175 py-8 sm:pt-0"
+      className="bg-neutral-100 text-[#141414] md:max-h-175 py-8 sm:pt-0 relative"
     >
-      <div className="flex min-h-[630px] items-center">
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ backgroundImage: "url(/bg-noise.webp)", backgroundRepeat: "repeat", backgroundSize: "200px", opacity: 0.06 }}
+        aria-hidden="true"
+      />
+      <div className="relative flex min-h-[630px] items-center">
         <div className="grid grid-cols-1 md:grid-cols-3 w-full relative">
           <div
             ref={lineRef}
@@ -288,7 +293,7 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
             <div className="grid *:col-start-1 *:row-start-1 overflow-hidden pb-2">
               <div
                 ref={meContentRef}
-                className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold will-change-transform"
+                className="prose max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold will-change-transform"
               >
                 <PrismicRichText field={slice.primary.about_me} />
                 <div className="flex md:justify-end justify-end mt-9">
@@ -304,7 +309,7 @@ const AboutDuo: FC<AboutDuoProps> = ({ slice }) => {
               <div
                 ref={aiContentRef}
                 style={{ opacity: 0 }}
-                className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold will-change-transform"
+                className="max-w-2xl text-lg sm:text-xl leading-relaxed [&_strong]:font-bold will-change-transform prose"
               >
                 <PrismicRichText field={slice.primary.about_ai} />
                 <div className="flex md:justify-end justify-start mt-9">

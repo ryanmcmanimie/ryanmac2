@@ -6,7 +6,7 @@ import { PrismicLink as BasePrismicLink } from "@prismicio/react";
 import type { LinkField } from "@prismicio/client";
 import { asLink } from "@prismicio/client";
 
-function slideInOut() {
+export function slideInOut() {
   const isMobile = "ontouchstart" in window || window.innerWidth < 768;
   const duration = isMobile ? 800 : 1500;
 

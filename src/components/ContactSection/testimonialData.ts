@@ -1,8 +1,13 @@
+import type { RichTextField } from "@prismicio/client";
+
 export interface Testimonial {
   id: number;
   name: string;
+  position: string;
   company: string;
   quote: string;
+  quoteRichText?: RichTextField;
+  quoteShortRichText?: RichTextField;
   portrait: string;
 }
 
@@ -10,6 +15,7 @@ const baseTestimonials: Testimonial[] = [
   {
     id: 1,
     name: "Sarah Chen",
+    position: "Head of Digital",
     company: "Nexus Digital",
     quote:
       "Ryan transformed our digital presence with an attention to detail that exceeded every expectation. The result was nothing short of remarkable.",
@@ -18,6 +24,7 @@ const baseTestimonials: Testimonial[] = [
   {
     id: 2,
     name: "Marcus Williams",
+    position: "CTO",
     company: "Altitude Labs",
     quote:
       "Working with Ryan was a masterclass in design thinking. He understood our vision before we could articulate it ourselves.",
@@ -26,6 +33,7 @@ const baseTestimonials: Testimonial[] = [
   {
     id: 3,
     name: "Tiny Fey",
+    position: "Creative Director",
     company: "Animal House Collective",
     quote:
       "Eiusmod anim nostrud eu irure eu ad amet irure ut. Dolor velit ipsum do consectetur nulla amet adipisicing et occaecat ad ullamco elit in in fugiat.",
@@ -34,6 +42,7 @@ const baseTestimonials: Testimonial[] = [
   {
     id: 4,
     name: "Elena Vasquez",
+    position: "Founder",
     company: "Prism Studios",
     quote:
       "The craftsmanship in every pixel was evident. Ryan delivered a product that not only looked stunning but performed flawlessly under pressure.",
@@ -42,6 +51,7 @@ const baseTestimonials: Testimonial[] = [
   {
     id: 5,
     name: "David Park",
+    position: "Managing Partner",
     company: "Horizon Ventures",
     quote:
       "From concept to launch, the process was seamless. Ryan has a rare ability to balance aesthetic vision with technical precision.",
@@ -50,6 +60,7 @@ const baseTestimonials: Testimonial[] = [
   {
     id: 6,
     name: "Amara Okafor",
+    position: "Marketing Director",
     company: "Lumina Creative",
     quote:
       "Our conversion rates doubled after the redesign. Ryan doesn't just make things beautiful — he makes them work.",
@@ -58,6 +69,7 @@ const baseTestimonials: Testimonial[] = [
   {
     id: 7,
     name: "James Thornton",
+    position: "CEO",
     company: "Vertex Agency",
     quote:
       "I've worked with dozens of developers. Ryan is in a league of his own when it comes to blending creativity with engineering rigor.",

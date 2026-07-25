@@ -547,6 +547,89 @@ export type ProjectDocument<Lang extends string = string> =
     Lang
   >;
 
+/**
+ * Content for Review documents
+ */
+interface ReviewDocumentData {
+  /**
+   * Name field in *Review*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: review.name
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  name: prismic.RichTextField;
+
+  /**
+   * Position field in *Review*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: review.position
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  position: prismic.KeyTextField;
+
+  /**
+   * Company field in *Review*
+   *
+   * - **Field Type**: Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: review.Company
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/text
+   */
+  Company: prismic.KeyTextField;
+
+  /**
+   * Testimonial field in *Review*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: review.testimonial
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  testimonial: prismic.RichTextField;
+
+  /**
+   * Short Testimonial field in *Review*
+   *
+   * - **Field Type**: Rich Text
+   * - **Placeholder**: *None*
+   * - **API ID Path**: review.short_testimonial
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/rich-text
+   */
+  short_testimonial: prismic.RichTextField;
+
+  /**
+   * Image field in *Review*
+   *
+   * - **Field Type**: Image
+   * - **Placeholder**: *None*
+   * - **API ID Path**: review.image
+   * - **Tab**: Main
+   * - **Documentation**: https://prismic.io/docs/fields/image
+   */
+  image: prismic.ImageField<never>;
+}
+
+/**
+ * Review document from Prismic
+ *
+ * - **API ID**: `review`
+ * - **Repeatable**: `true`
+ * - **Documentation**: https://prismic.io/docs/content-modeling
+ *
+ * @typeParam Lang - Language API ID of the document.
+ */
+export type ReviewDocument<Lang extends string = string> =
+  prismic.PrismicDocumentWithUID<Simplify<ReviewDocumentData>, "review", Lang>;
+
 type ServiceDocumentDataSlicesSlice = SimpleHeroSlice;
 
 /**
@@ -760,6 +843,7 @@ export type AllDocumentTypes =
   | LogosDocument
   | NavigationDocument
   | ProjectDocument
+  | ReviewDocument
   | ServiceDocument
   | ServicesDocument
   | SettingsDocument;
@@ -1148,6 +1232,8 @@ declare module "@prismicio/client" {
       ProjectDocument,
       ProjectDocumentData,
       ProjectDocumentDataSlicesSlice,
+      ReviewDocument,
+      ReviewDocumentData,
       ServiceDocument,
       ServiceDocumentData,
       ServiceDocumentDataSlicesSlice,

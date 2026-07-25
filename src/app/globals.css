@@ -25,7 +25,7 @@
 }
 
 html {
-  zoom: 0.9;
+  font-size: 90%;
 }
 
 body {
@@ -125,5 +125,17 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+.prose p {
+  margin-bottom: 1.5rem; 
+}
+
+@media (width >= theme(--breakpoint-sm)) {
+  .prose p:first-of-type {
+    @apply font-serif;
+    @apply text-4xl;
+    @apply leading-snug;
   }
 }

@@ -3,67 +3,76 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import Image from "next/image";
-import { testimonials, Testimonial } from "./testimonialData";
+import { PrismicRichText } from "@prismicio/react";
+import { isFilled } from "@prismicio/client";
+import type { Testimonial } from "./testimonialData";
 
-const BASE_COUNT = testimonials.length;
+interface TestimonialSliderProps {
+  testimonials: Testimonial[];
+}
 
 function TestimonialCard({
   testimonial,
-  clipPath,
-  spacerHeight,
+  short = false,
 }: {
   testimonial: Testimonial;
-  clipPath: string;
-  spacerHeight: string;
+  short?: boolean;
 }) {
+  const useShort = short && testimonial.quoteShortRichText && isFilled.richText(testimonial.quoteShortRichText);
+
   return (
     <>
       <Image
         src={testimonial.portrait}
         alt={testimonial.name}
         fill
-        className="object-cover"
+        className="object-cover object-top grayscale"
         unoptimized
       />
-      <div
-        className="absolute inset-0 flex flex-col bg-linear-to-t from-black via-black to-transparent opacity-80"
-        style={{ clipPath }}
-      >
-        <div className="shrink-0" style={{ minHeight: spacerHeight }} />
-        <div className="flex flex-col flex-1 px-3 pb-3 sm:px-6 sm:pb-6">
-          <div>
-            <svg
-              width="28"
-              height="20"
-              viewBox="0 0 32 24"
-              fill="none"
-              className="text-white mb-2"
-            >
-              <path
-                d="M0 24V14.4C0 11.7333 0.488889 9.28889 1.46667 7.06667C2.48889 4.8 3.82222 2.93333 5.46667 1.46667L9.06667 4.26667C7.82222 5.46667 6.8 6.84444 6 8.4C5.24444 9.91111 4.86667 11.5111 4.86667 13.2H9.33333V24H0ZM17.3333 24V14.4C17.3333 11.7333 17.8222 9.28889 18.8 7.06667C19.8222 4.8 21.1556 2.93333 22.8 1.46667L26.4 4.26667C25.1556 5.46667 24.1333 6.84444 23.3333 8.4C22.5778 9.91111 22.2 11.5111 22.2 13.2H26.6667V24H17.3333Z"
-                fill="currentColor"
-              />
-            </svg>
-            <p className="text-white leading-relaxed pt-1">
-              {testimonial.quote}
-            </p>
+      {/* Full-height overlay — content locked to bottom half */}
+      <div className="absolute inset-0 bg-linear-to-t from-black/90 sm:from-black via-black/60 sm:via-transparent to-transparent flex flex-col px-3 pb-3 sm:px-6 sm:pb-6">
+        <div className="sm:min-h-[57%] min-h-[40%] shrink-0" />
+        <svg
+          width="32"
+          height="23"
+          viewBox="0 0 32 24"
+          fill="none"
+          className="text-green-100 mb-3"
+        >
+          <path
+            d="M0 24V14.4C0 11.7333 0.488889 9.28889 1.46667 7.06667C2.48889 4.8 3.82222 2.93333 5.46667 1.46667L9.06667 4.26667C7.82222 5.46667 6.8 6.84444 6 8.4C5.24444 9.91111 4.86667 11.5111 4.86667 13.2H9.33333V24H0ZM17.3333 24V14.4C17.3333 11.7333 17.8222 9.28889 18.8 7.06667C19.8222 4.8 21.1556 2.93333 22.8 1.46667L26.4 4.26667C25.1556 5.46667 24.1333 6.84444 23.3333 8.4C22.5778 9.91111 22.2 11.5111 22.2 13.2H26.6667V24H17.3333Z"
+            fill="currentColor"
+          />
+        </svg>
+        {useShort ? (
+          <div className="text-white/90 font-medium leading-relaxed [&_strong]:font-black [&_strong]:text-green-100">
+            <PrismicRichText field={testimonial.quoteShortRichText!} />
           </div>
-          <div className="flex-1" />
-          <div className="mb-1">
-            <p className="text-white text-sm font-medium pb-1">
-              -{testimonial.name}
-            </p>
-            <p className="text-white/60 text-xs ml-1">
-              {testimonial.company}
-            </p>
+        ) : testimonial.quoteRichText && isFilled.richText(testimonial.quoteRichText) ? (
+          <div className="text-white/90 font-medium leading-relaxed [&_strong]:font-black [&_strong]:text-green-100">
+            <PrismicRichText field={testimonial.quoteRichText} />
           </div>
+        ) : (
+          <p className="text-white font-normal leading-relaxed">
+            {testimonial.quote}
+          </p>
+        )}
+        <div className="flex-1" />
+        <div>
+          <p className="text-white text-sm font-medium pb-1">
+            -{testimonial.name}
+          </p>
+          <p className="text-green-100 text-sm ml-1 font-bold">
+            {testimonial.position}{testimonial.position && testimonial.company ? " @ " : ""}{testimonial.company}
+          </p>
         </div>
       </div>
     </>
   );
 }
 
-export function TestimonialSlider() {
+export function TestimonialSlider({ testimonials }: TestimonialSliderProps) {
+  const BASE_COUNT = testimonials.length;
   const [activeIndex, setActiveIndex] = useState(BASE_COUNT + 1);
   const [isHovered, setIsHovered] = useState(false);
   const skipAnimationRef = useRef(false);
@@ -114,7 +123,7 @@ export function TestimonialSlider() {
       cardRefs.current.forEach((card, i) => {
         if (!card) return;
         const isActive = i === activeIndex;
-        const baseHeight = Math.min(card.offsetWidth * 1.5, 500);
+        const baseHeight = Math.min(card.offsetWidth * 1.7, 560);
         gsap.set(card, {
           height: isActive ? baseHeight * 1.1 : baseHeight,
           opacity: isActive ? 1 : 0.3,
@@ -144,7 +153,7 @@ export function TestimonialSlider() {
       if (!card) return;
       gsap.killTweensOf(card);
       const isActive = i === activeIndex;
-      const baseHeight = Math.min(card.offsetWidth * 1.5, 500);
+      const baseHeight = Math.min(card.offsetWidth * 1.7, 560);
       gsap.to(card, {
         height: isActive ? baseHeight * 1.1 : baseHeight,
         opacity: isActive ? 1 : 0.2,
@@ -214,8 +223,8 @@ export function TestimonialSlider() {
   }, []);
 
   const desktopCardWidth = "calc(32.329vw - 3.637rem)";
-  const desktopStripHeight = "min(calc((32.329vw - 3.637rem) * 1.7), 560px)";
-  const desktopContainerMinHeight = "min(calc((32.329vw - 3.637rem) * 1.7 + 2rem), 580px)";
+  const desktopStripHeight = "min(calc((32.329vw - 3.637rem) * 1.7 * 1.1), 616px)";
+  const desktopContainerMinHeight = "min(calc((32.329vw - 3.637rem) * 1.7 * 1.1 + 2rem), 640px)";
 
   return (
     <div ref={containerRef} className="relative">
@@ -241,11 +250,7 @@ export function TestimonialSlider() {
                   scrollSnapAlign: "center",
                 }}
               >
-                <TestimonialCard
-                  testimonial={testimonial}
-                  clipPath="polygon(0 33%, 100% 41%, 100% 100%, 0 100%)"
-                  spacerHeight="40%"
-                />
+                <TestimonialCard testimonial={testimonial} short />
               </div>
             ))}
             {/* Spacer so last card can scroll fully into view */}
@@ -271,7 +276,7 @@ export function TestimonialSlider() {
         onMouseLeave={() => setIsHovered(false)}
       >
         <div
-          className="overflow-hidden py-4"
+          className="overflow-hidden py-6"
           style={{ minHeight: desktopContainerMinHeight }}
         >
           <div
@@ -289,16 +294,12 @@ export function TestimonialSlider() {
                 className="shrink-0 relative overflow-hidden rounded-lg cursor-pointer"
                 style={{
                   width: desktopCardWidth,
-                  aspectRatio: "1 / 1.5",
+                  aspectRatio: "1 / 1.7",
                   opacity: i === BASE_COUNT + 1 ? 1 : 0.2,
                   filter: i === BASE_COUNT + 1 ? "grayscale(0) blur(0px)" : "grayscale(1) blur(1px)",
                 }}
               >
-                <TestimonialCard
-                  testimonial={testimonial}
-                  clipPath="polygon(0 48%, 100% 56%, 100% 100%, 0 100%)"
-                  spacerHeight="55%"
-                />
+                <TestimonialCard testimonial={testimonial} />
               </div>
             ))}
           </div>

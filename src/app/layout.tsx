@@ -19,10 +19,11 @@ export default async function RootLayout({
 }>) {
   const client = createClient();
 
-  const [navigation, settings, logos] = await Promise.all([
+  const [navigation, settings, logos, reviews] = await Promise.all([
     client.getSingle("navigation").catch(() => null),
     client.getSingle("settings").catch(() => null),
     client.getSingle("logos").catch(() => null),
+    client.getAllByType("review").catch(() => []),
   ]);
 
   return (
@@ -31,7 +32,7 @@ export default async function RootLayout({
         <body className={`${helveticaNeue.variable} ${helveticaNeueCn.variable} ${instrumentSans.variable} ${instrumentSerif.variable} text-base md:text-lg antialiased`}>
           <LenisProvider>
             <LogosProvider logos={logos}>
-              <PushMenuProvider navigation={navigation} settings={settings}>
+              <PushMenuProvider navigation={navigation} settings={settings} reviews={reviews}>
                 {children}
               </PushMenuProvider>
             </LogosProvider>

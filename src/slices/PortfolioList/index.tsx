@@ -18,6 +18,7 @@ async function PortfolioList({ slice }: PortfolioListProps) {
 
   const projects = projectDocs
     .map((doc) => ({
+      uid: doc.uid,
       name: asText(doc.data.title),
       nickname: doc.data.nickname || null,
       subtitle: doc.data.subtitle ? asText(doc.data.subtitle) : null,
@@ -25,7 +26,7 @@ async function PortfolioList({ slice }: PortfolioListProps) {
       order: doc.data.order ? parseInt(doc.data.order, 10) : Infinity,
     }))
     .sort((a, b) => a.order - b.order)
-    .map(({ name, nickname, subtitle, muxPlaybackId }) => ({ name, nickname, subtitle, muxPlaybackId }));
+    .map(({ uid, name, nickname, subtitle, muxPlaybackId }) => ({ uid, name, nickname, subtitle, muxPlaybackId }));
 
   return (
     <div

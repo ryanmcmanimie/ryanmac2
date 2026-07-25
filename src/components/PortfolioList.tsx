@@ -6,13 +6,16 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import MuxPlayer from "@mux/mux-player-react";
 import type MuxPlayerElement from "@mux/mux-player";
+import { useTransitionRouter } from "next-view-transitions";
 import { RedactText } from "./RedactText";
+import { TransitionLink, slideInOut } from "./TransitionLink/TransitionLink";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 }
 
 interface Project {
+  uid: string;
   name: string;
   nickname: string | null;
   subtitle: string | null;
@@ -149,6 +152,13 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
   return (
     <section ref={sectionRef} className="bg-[#141414] text-white font-sans min-h-screen relative">
 
+      {/* Background noise texture */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ backgroundImage: "url(/bg-noise.webp)", backgroundRepeat: "repeat", backgroundSize: "200px", opacity: 0.06, mixBlendMode: "overlay" }}
+        aria-hidden="true"
+      />
+
       {/* Top fade gradient - appears once first item scrolls off */}
       <div className={`sticky top-0 left-0 right-0 h-48 bg-linear-to-b from-[#141414] via-[#141414]/60 to-transparent z-20 pointer-events-none transition-opacity duration-500 ${showTopGradient ? "opacity-100" : "opacity-0"}`} />
 
@@ -166,37 +176,39 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
                 ref={(el) => { mobileItemRefs.current[index] = el; }}
                 className="flex flex-col gap-4"
               >
-                <div
-                  className="w-full aspect-video overflow-hidden rounded-sm transition-all duration-300"
-                  style={{
-                    filter: isActive ? "brightness(1)" : "brightness(0.2)",
-                    transform: isActive ? "scale(1.05)" : "scale(1)",
-                  }}
-                >
-                  {project.muxPlaybackId ? (
-                    <MuxPlayer
-                      ref={(el) => { playerRefs.current[index] = el; }}
-                      playbackId={project.muxPlaybackId}
-                      muted
-                      loop
-                      playsInline
-                      className="w-full h-full object-cover"
-                      style={{ "--controls": "none" }}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-800" />
-                  )}
-                </div>
-                <div className={`transition-opacity duration-300 ${isActive ? "opacity-100" : "opacity-30"}`}>
-                  <h2 className="text-2xl font-black font-serif tracking-wide">
-                    {project.name}
-                  </h2>
-                  {project.subtitle && (
-                    <p className="text-sm text-[#5f5f5f] italic mt-0.5">
-                      {project.subtitle}
-                    </p>
-                  )}
-                </div>
+                <TransitionLink href={`/projects/${project.uid}`} className="block">
+                  <div
+                    className="w-full aspect-video overflow-hidden rounded-sm transition-all duration-300"
+                    style={{
+                      filter: isActive ? "brightness(1)" : "brightness(0.2)",
+                      transform: isActive ? "scale(1.05)" : "scale(1)",
+                    }}
+                  >
+                    {project.muxPlaybackId ? (
+                      <MuxPlayer
+                        ref={(el) => { playerRefs.current[index] = el; }}
+                        playbackId={project.muxPlaybackId}
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-full object-cover"
+                        style={{ "--controls": "none" }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-800" />
+                    )}
+                  </div>
+                  <div className={`transition-opacity duration-300 mt-4 ${isActive ? "opacity-100" : "opacity-30"}`}>
+                    <h2 className="text-2xl font-black font-serif tracking-wide">
+                      {project.name}
+                    </h2>
+                    {project.subtitle && (
+                      <p className="text-sm text-[#5f5f5f] italic mt-0.5">
+                        {project.subtitle}
+                      </p>
+                    )}
+                  </div>
+                </TransitionLink>
               </div>
             );
           })}
@@ -219,6 +231,7 @@ function MobilePortfolioList({ projects }: PortfolioListProps) {
 }
 
 function DesktopPortfolioList({ projects }: PortfolioListProps) {
+  const router = useTransitionRouter();
   const spotlightRef = useRef<HTMLDivElement>(null);
   const projectIndexRef = useRef<HTMLHeadingElement>(null);
   const projectImagesRef = useRef<HTMLDivElement>(null);
@@ -267,6 +280,13 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
     if (index !== activeIndexRef.current) return;
     const inner = cursorRef.current?.querySelector("[data-cursor-inner]") as HTMLElement | null;
     if (inner) gsap.to(inner, { x: 0, y: 0, boxShadow: "2px 2px 0px rgba(0,0,0,0.5)", duration: 0.1 });
+  };
+
+  const handleVideoClick = (index: number) => {
+    if (index !== activeIndexRef.current) return;
+    router.push(`/projects/${projects[index].uid}`, {
+      onTransitionReady: slideInOut,
+    });
   };
 
   const scrollToProject = (index: number) => {
@@ -401,13 +421,14 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
   return (
     <section className="bg-[#141414] text-white font-sans relative">
 
-      {/* Background Image */}
+      {/* Background noise texture */}
       <div
-        className="absolute inset-0 bg-cover bg-center bg-fixed bg-no-repeat pointer-events-none"
-        style={{ backgroundImage: "url('/lines2.jpg')", opacity: 0.02 }}
+        className="absolute inset-0 pointer-events-none"
+        style={{ backgroundImage: "url(/bg-noise.webp)", backgroundRepeat: "repeat", backgroundSize: "200px", opacity: 0.06, mixBlendMode: "overlay" }}
+        aria-hidden="true"
       />
 
-     
+
       <div className="absolute top-0 right-8 z-10 mt-8   text-right">
         <h2 className="text-white uppercase tracking-tighter font-medium text-[6rem] font-serif leading-none">Projects</h2>
         <div className="text-white text-sm">More En Route</div>
@@ -444,6 +465,7 @@ function DesktopPortfolioList({ projects }: PortfolioListProps) {
               onMouseLeave={handleVideoMouseLeave}
               onMouseDown={() => handleVideoMouseDown(index)}
               onMouseUp={() => handleVideoMouseUp(index)}
+              onClick={() => handleVideoClick(index)}
             >
               {project.muxPlaybackId ? (
                 <MuxPlayer

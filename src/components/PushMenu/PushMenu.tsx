@@ -24,6 +24,7 @@ import { useLenis } from "@/providers/LenisProvider";
 import { Footer } from "@/components/Footer";
 import { ContactSection } from "@/components/ContactSection";
 import { AnimatedHamburgerButton } from "@/components/AnimatedHamburger";
+import { HongKongClock } from "@/components/HongKongClock";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(CustomEase, SplitText, ScrollTrigger);
@@ -51,6 +52,7 @@ interface PushMenuProviderProps {
   children: ReactNode;
   navigation: Content.NavigationDocument | null;
   settings: Content.SettingsDocument | null;
+  reviews: Content.ReviewDocument[];
 }
 
 function slideInOut() {
@@ -81,7 +83,7 @@ function slideInOut() {
   );
 }
 
-export function PushMenuProvider({ children, navigation, settings }: PushMenuProviderProps) {
+export function PushMenuProvider({ children, navigation, settings, reviews }: PushMenuProviderProps) {
   const lenis = useLenis();
   const router = useTransitionRouter();
   const [isOpen, setIsOpen] = useState(false);
@@ -405,7 +407,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
       value={{ isOpen, toggle, open: openMenu, close: closeMenu }}
     >
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 w-screen h-svh pointer-events-none overflow-hidden z-50">
+      <nav className="fixed inset-0 pointer-events-none overflow-hidden z-50">
         {/* Menu Bar */}
         <div
           ref={menuBarRef}
@@ -459,12 +461,12 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
         {/* Menu Overlay */}
         <div
           ref={menuOverlayRef}
-          className="fixed top-0 left-0 w-screen h-svh bg-[#0f0f0f] text-white overflow-hidden z-40"
+          className="fixed inset-0 bg-[#0f0f0f] text-white overflow-hidden z-40"
           style={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%)" }}
         >
           <div
             ref={menuOverlayContentRef}
-            className="fixed top-0 left-0 w-screen h-svh flex -translate-y-1/2 will-change-transform pointer-events-auto"
+            className="fixed inset-0 flex -translate-y-1/2 will-change-transform pointer-events-auto"
           >
             {/* Media */}
             <div
@@ -536,11 +538,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
                   ref={(el) => addMenuColRef(el, 2)}
                   className="flex-[3] flex flex-col gap-2"
                 >
-                  {settings?.data.location && (
-                    <p className="font-medium text-[#5f5f5f]">
-                      {asText(settings.data.location)}
-                    </p>
-                  )}
+                  <HongKongClock className="font-medium text-[#5f5f5f]" />
                 </div>
                 <div
                   ref={(el) => addMenuColRef(el, 3)}
@@ -577,7 +575,7 @@ export function PushMenuProvider({ children, navigation, settings }: PushMenuPro
         className="relative z-10 bg-[#171717] text-white"
       >
         <main>{children}</main>
-        <ContactSection />
+        <ContactSection reviews={reviews} />
         <Footer />
       </div>
 
