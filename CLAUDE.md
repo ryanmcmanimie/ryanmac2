@@ -59,22 +59,7 @@ The `.claude/memory/` folder contains project learnings that persist across sess
 
 ## Prismic Integration
 
-**ALWAYS invoke `/prismic` before any Prismic work.** This includes slices, rich text, API calls, content modeling, or migrations. The skill loads context-specific reference files and self-improves as patterns are discovered.
-
-Reference files available:
-- Slice creation (models, mocks, components)
-- Rich text format and rendering
-- API patterns (Migration vs Content API)
-- Field preservation rules
-- Multi-language documents
-
-### Quick Environment Setup
-
-```bash
-PRISMIC_REPOSITORY=your-repo-name
-PRISMIC_READ_KEY=your-content-api-token    # For reading published content
-PRISMIC_KEY=your-migration-api-token       # For creating/updating (if needed)
-```
+Prismic workflow: follow the `web:prismic-house-rules` skill; recipes: `web:prismic-shared-slice`, `web:blog-content`. Repo `ryanmac`. The repo-local `/prismic` skill in `.claude/skills/prismic/` predates the Slice Machine removal (see Operational notes); where it disagrees with the house rules, the house rules win.
 
 ## Testing
 
@@ -115,7 +100,7 @@ Copy to your project's `.claude/` and customize as needed.
 - `/hand-off` - Session transition (captures state for next session)
 
 **Skills:**
-- `/prismic` - Prismic CMS integration (slices, rich text, APIs)
+- `/prismic` - repo-local Prismic notes (Slice Machine era; `web:prismic-house-rules` takes precedence)
 - `/frontend-design` - Anthropic's official skill for distinctive, production-grade UI (avoids generic AI aesthetics)
 
 **Reference Files:**
