@@ -1,9 +1,11 @@
-# Project Instructions
+# ryanmac2 (ryanmac.com)
 
 ## Overview
 
-<!-- Customize this section for your project -->
-This is a Next.js web application using Prismic as the headless CMS.
+The website of RyanMac (RYANMAC LIMITED), Ryan McManimie's one-person Hong Kong agency selling web development,
+design, SEO, paid ads, analytics and CRO to SMB clients, mostly HK/APAC plus some US. Next.js 16 (App Router),
+Prismic (repo `ryanmac`), Tailwind 4, three.js/GSAP. Production branch `main`. This repo is the owner's own site
+(`kind: owner` in hq, id `ryanmac`), not a client project.
 
 ## Tech Stack
 
@@ -124,3 +126,20 @@ Copy to your project's `.claude/` and customize as needed.
 - `.claude/memory/project-context.md` - Project overview
 - `.claude/memory/known-gotchas.md` - Discovered gotchas
 - `.claude/memory/common-patterns.md` - Project patterns
+
+## Operational notes (from hq)
+
+- Until 2026-11-17 this file was the unfilled starter template; the Overview above is now real, the rest of the
+  template sections (Styling, Deployment, File Structure) are still generic. Actual layout: `src/app`,
+  `src/components`, `src/slices`, `src/lib`, `src/providers`; dev server on port 3001.
+- Slice Machine was removed in commit `4124bcb` ("Migrate from Slice Machine to Prismic Type Builder and CLI"):
+  `prismic.config.json` replaces `slicemachine.config.json`, route resolvers live in `prismic.config.json`, and
+  `npm run dev` runs Next only. As of 2026-11-17 that commit was still local-only on Ryan's laptop (origin/main is
+  one commit behind and still has `slicemachine.config.json`).
+- Nothing in this app serves `/slack-oauth`. A Slack app's OAuth redirect URL was once set to
+  `https://ryanmac.com/slack-oauth`; that route does not exist here (only `/api/preview`, `/api/exit-preview`,
+  `/api/revalidate`), so any Slack OAuth flow pointed at it will 404.
+- Account ids (GA4 449237961, GSC `sc-domain:ryanmac.com`, Prismic `ryanmac`) are in
+  `~/Github/hq/clients/ryanmac/client.yaml`.
+- Business context, open work and client memory live in ~/Github/hq/clients/ryanmac/ (brief.md, now.md,
+  memory.md). Run `wrap` at a stopping point.
