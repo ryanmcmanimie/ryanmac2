@@ -39,7 +39,7 @@ export function ContactSection({ reviews }: ContactSectionProps) {
               From brief to better
             </h2>
             <p className="text-black/50 mt-2 leading-relaxed">
-              It's trite but I genuinely strive to build business relationships that last well beyond the initial deliverable.
+              It&apos;s trite but I genuinely strive to build business relationships that last well beyond the initial deliverable.
             </p>
           </div>
           <TestimonialSlider testimonials={testimonials} />

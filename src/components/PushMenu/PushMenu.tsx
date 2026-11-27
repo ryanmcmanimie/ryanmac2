@@ -12,6 +12,7 @@ import {
 } from "react";
 import type { MouseEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useTransitionRouter } from "next-view-transitions";
 import { PrismicLink } from "@prismicio/react";
 import { asText, asLink, isFilled } from "@prismicio/client";
@@ -414,7 +415,7 @@ export function PushMenuProvider({ children, navigation, settings, reviews }: Pu
           className={`fixed top-0 left-0 w-screen p-5 sm:p-8 flex justify-between items-center pointer-events-auto z-50 transition-all duration-300 ${isFloating && !isOpen ? `max-sm:backdrop-blur-sm ${leftOverLight ? "max-sm:bg-white/80" : "max-sm:bg-black/80"}` : ""}`}
         >
           {/* Logo */}
-          <a
+          <Link
             href="/"
             className={`block transition-all duration-300 ${leftOverLight && !isOpen ? "**:text-black!" : ""}`}
             onClick={(e) => {
@@ -434,7 +435,7 @@ export function PushMenuProvider({ children, navigation, settings, reviews }: Pu
               height={29}
               className={`transition-all duration-300 ${leftOverLight && !isOpen ? "invert" : ""}`}
             />
-          </a>
+          </Link>
 
           {/* Toggle Button */}
           <div

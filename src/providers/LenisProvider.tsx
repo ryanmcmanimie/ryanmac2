@@ -4,7 +4,9 @@ import {
   createContext,
   useContext,
   useEffect,
-  useRef,
+  useMemo,
+  useState,
+  useSyncExternalStore,
   ReactNode,
 } from "react";
 import Lenis from "lenis";
@@ -45,12 +47,44 @@ interface LenisProviderProps {
   children: ReactNode;
 }
 
+interface LenisStore {
+  getSnapshot: () => Lenis | null;
+  subscribe: (listener: () => void) => () => void;
+  set: (lenis: Lenis | null) => void;
+}
+
+function createLenisStore(): LenisStore {
+  let current: Lenis | null = null;
+  const listeners = new Set<() => void>();
+
+  return {
+    getSnapshot: () => current,
+    subscribe: (listener) => {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    set: (next) => {
+      current = next;
+      listeners.forEach((listener) => listener());
+    },
+  };
+}
+
+const getServerLenisSnapshot = () => null;
+
 export function LenisProvider({ children }: LenisProviderProps) {
-  const lenisRef = useRef<Lenis | null>(null);
+  const [store] = useState(createLenisStore);
+  const lenis = useSyncExternalStore(
+    store.subscribe,
+    store.getSnapshot,
+    getServerLenisSnapshot
+  );
 
   useEffect(() => {
     const isTouchDevice = "ontouchstart" in window;
-    const lenis = new Lenis({
+    const instance = new Lenis({
       // On touch devices, let Lenis ignore touch-initiated scroll events entirely
       // so native iOS/Android momentum scrolling takes over
       ...(isTouchDevice && {
@@ -58,23 +92,27 @@ export function LenisProvider({ children }: LenisProviderProps) {
           !(data.event instanceof TouchEvent),
       }),
     });
-    lenisRef.current = lenis;
+    store.set(instance);
 
-    lenis.on("scroll", ScrollTrigger.update);
+    instance.on("scroll", ScrollTrigger.update);
 
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
+    const onTick = (time: number) => {
+      instance.raf(time * 1000);
+    };
+    gsap.ticker.add(onTick);
     gsap.ticker.lagSmoothing(0);
 
     return () => {
-      lenis.destroy();
-      lenisRef.current = null;
+      gsap.ticker.remove(onTick);
+      instance.destroy();
+      store.set(null);
     };
-  }, []);
+  }, [store]);
+
+  const value = useMemo(() => ({ lenis }), [lenis]);
 
   return (
-    <LenisContext.Provider value={{ lenis: lenisRef.current }}>
+    <LenisContext.Provider value={value}>
       {children}
     </LenisContext.Provider>
   );
