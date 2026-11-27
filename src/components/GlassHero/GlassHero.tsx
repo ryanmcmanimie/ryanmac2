@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import Image from "next/image";
 import * as THREE from "three";
 import { vertexShader, fragmentShader } from "./shaders";
@@ -23,6 +23,76 @@ const DEFAULT_IMAGES = {
 
 const MOBILE_BREAKPOINT = 768;
 
+interface HeroViewport {
+  isMobile: boolean;
+  fixedHeight: number | null;
+}
+
+const SERVER_VIEWPORT: HeroViewport = { isMobile: false, fixedHeight: null };
+
+let cachedViewport: HeroViewport | null = null;
+let lastMeasuredWidth = 0;
+const viewportListeners = new Set<() => void>();
+
+function readViewport(): HeroViewport {
+  const width = window.innerWidth;
+  const isMobile = width < MOBILE_BREAKPOINT;
+  lastMeasuredWidth = width;
+  if (!isMobile) {
+    return SERVER_VIEWPORT;
+  }
+  return {
+    isMobile: true,
+    fixedHeight: window.innerHeight,
+  };
+}
+
+function handleViewportResize() {
+  const currentWidth = window.innerWidth;
+  // Only recapture height on significant width changes (orientation/breakpoint)
+  // not on height changes from toolbar show/hide
+  if (Math.abs(currentWidth - lastMeasuredWidth) <= 100) return;
+  cachedViewport = readViewport();
+  viewportListeners.forEach((listener) => listener());
+}
+
+function subscribeViewport(listener: () => void) {
+  if (viewportListeners.size === 0) {
+    const next = readViewport();
+    if (
+      !cachedViewport ||
+      cachedViewport.isMobile !== next.isMobile ||
+      cachedViewport.fixedHeight !== next.fixedHeight
+    ) {
+      cachedViewport = next;
+    }
+    window.addEventListener("resize", handleViewportResize);
+  }
+  viewportListeners.add(listener);
+  return () => {
+    viewportListeners.delete(listener);
+    if (viewportListeners.size === 0) {
+      window.removeEventListener("resize", handleViewportResize);
+      cachedViewport = null;
+      lastMeasuredWidth = 0;
+    }
+  };
+}
+
+function getViewportSnapshot(): HeroViewport {
+  if (typeof window === "undefined") {
+    return SERVER_VIEWPORT;
+  }
+  if (cachedViewport === null) {
+    cachedViewport = readViewport();
+  }
+  return cachedViewport;
+}
+
+function getServerViewportSnapshot(): HeroViewport {
+  return SERVER_VIEWPORT;
+}
+
 interface GlassHeroProps {
   desktopImage?: string;
   mobileImage?: string;
@@ -43,45 +113,13 @@ export function GlassHero({
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const frameRef = useRef<number>(0);
-  const lastWidthRef = useRef<number>(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const [fixedHeight, setFixedHeight] = useState<number | null>(null);
-
-  // Detect mobile on mount and capture fixed height once
-  useEffect(() => {
-    const width = window.innerWidth;
-    const isMobileDevice = width < MOBILE_BREAKPOINT;
-    lastWidthRef.current = width;
-    setIsMobile(isMobileDevice);
-
-    // Capture viewport height once on mount for mobile to prevent
-    // jarring resize when browser chrome hides/shows
-    if (isMobileDevice) {
-      setFixedHeight(window.innerHeight);
-    }
-
-    const handleResize = () => {
-      const currentWidth = window.innerWidth;
-      const nowMobile = currentWidth < MOBILE_BREAKPOINT;
-      const widthChanged = Math.abs(currentWidth - lastWidthRef.current) > 100;
-
-      // Only recapture height on significant width changes (orientation/breakpoint)
-      // not on height changes from toolbar show/hide
-      if (widthChanged) {
-        lastWidthRef.current = currentWidth;
-        setIsMobile(nowMobile);
-
-        if (nowMobile) {
-          setFixedHeight(window.innerHeight);
-        } else {
-          setFixedHeight(null);
-        }
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  // Capture viewport height once on mount for mobile to prevent
+  // jarring resize when browser chrome hides/shows
+  const { isMobile, fixedHeight } = useSyncExternalStore(
+    subscribeViewport,
+    getViewportSnapshot,
+    getServerViewportSnapshot
+  );
 
   useEffect(() => {
     if (!containerRef.current) return;
